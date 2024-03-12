@@ -1,0 +1,3 @@
+[submodule "mirror-logging"]
+	path = mirror-logging
+	url = https://github.com/carykees98/mirror-logging

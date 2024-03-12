@@ -1,0 +1,7 @@
+.idea/*
+target/*
+.vscode/*
+.env
+*.tar.gz
+*.sha256
+GeoLite2City/*
