@@ -1,0 +1,8 @@
+#  __  __ _                  _   ___ ___
+# |  \/  (_)_ _ _ _ ___ _ _ /_\ | _ \_ _|
+# | |\/| | | '_| '_/ _ \ '_/ _ \|  _/| |
+# |_|  |_|_|_| |_| \___/_|/_/ \_\_| |___|
+# https://github.com/COSI-Lab
+# Application version ${application.version}.
+# Spring Boot version ${spring-boot.version}.
+#
