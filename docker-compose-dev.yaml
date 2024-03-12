@@ -25,7 +25,7 @@ services:
     build: ./mirror-sync-scheduler
     container_name: mirror-sync-scheduler
     volumes:
-      - "./storage:/storage"
+      - "./mirror-sync-scheduler/storage:/storage"
       - "./mirror-sync-scheduler/configs:/mirror/configs:ro"
       - "./mirror-sync-scheduler/scripts:/mirror/scripts:ro"
     networks:
@@ -63,8 +63,8 @@ services:
     expose:
       - 8080
     volumes:
-      - "./access.log:/mirror/access.log:ro"
-      - "./data:/mirror/data"
+      - "./mirror-metrics/access.log:/mirror/access.log:ro"
+      - "./mirror-metrics/data:/mirror/data"
     networks:
       - mirror
     depends_on:
