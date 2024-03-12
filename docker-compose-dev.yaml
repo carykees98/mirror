@@ -46,8 +46,6 @@ services:
     container_name: mirror-website
     expose:
       - 3000
-    volumes:
-      - "./configs:/mirror/configs:ro"
     networks:
       - mirror
     deploy:
