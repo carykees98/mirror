@@ -19,6 +19,24 @@ services:
         limits:
           cpus: "2.0"
           memory: "1024M"
+
+  # --- API ---
+  api:
+    build: ./mirror-api
+    container_name: mirror-api
+    expose:
+      - 8080
+    networks:
+      - mirror
+    volumes:
+      - "./configs/mirrors.json:/mirrorapi/mirrors.json:ro"
+    depends_on:
+      - log-server
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1024M"
   
   # --- Sync scheduler ---
   sync-scheduler:
@@ -31,6 +49,8 @@ services:
       - "./scripts:/mirror/scripts:ro"
     networks:
       - mirror
+    depends_on:
+      - log-server
     deploy:
       resources:
         limits:
@@ -48,6 +68,8 @@ services:
       - 3000
     networks:
       - mirror
+    depends_on:
+      - api
     deploy:
       resources:
         limits:
@@ -66,6 +88,8 @@ services:
       - "./data:mirror_metrics/data"
     networks:
       - mirror
+    depends_on:
+      - log-server
     deploy:
       resources:
         limits:
