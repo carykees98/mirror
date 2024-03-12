@@ -1,0 +1,105 @@
+#
+# docker-compose-prod.yaml (PRODUCTION)
+# https://github.com/COSI-Lab/
+#
+services:
+  # --- Log server ---
+  log-server:
+    build: ./mirrorlog
+    container_name: mirrorlog
+    expose:
+      - 4001
+    volumes:
+      - "./logs:/mirror/mirrorlog/logs"
+      - "./configs/mirrorlog.conf.json:/mirror/configs/mirrorlog.conf.json:ro"
+    networks:
+      - mirror
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1024M"
+  
+  # --- Sync scheduler ---
+  sync-scheduler:
+    build: ./mirror-sync-scheduler
+    container_name: mirror-sync-scheduler
+    restart: unless-stopped
+    volumes:
+      - "/storage:/storage"
+      - "./configs:/mirror/configs:ro"
+      - "./scripts:/mirror/scripts:ro"
+    networks:
+      - mirror
+    deploy:
+      resources:
+        limits:
+          cpus: "8.0"
+          memory: "16384M"
+    stdin_open: true
+    tty: true
+
+  # --- Website ---
+  website:
+    build: ./mirror-website-nuxt
+    container_name: mirror-website
+    restart: unless-stopped
+    expose:
+      - 3000
+    volumes:
+      - "./configs:/mirror/configs:ro"
+    networks:
+      - mirror
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: "8192M"
+
+  # --- Metrics engine ---
+  metrics:
+    build: ./mirror-metrics
+    container_name: mirror-metrics
+    restart: unless-stopped
+    expose:
+      - 8080
+    volumes:
+      - "/var/log/nginx/access.log:/mirror/access.log:ro"
+      - "./data:mirror_metrics/data"
+    networks:
+      - mirror
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: "8192M"
+
+  # --- Prometheus DB ---
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: mirror-prometheus
+    restart: unless-stopped
+    expose:
+      - 9090
+    volumes:
+      - "./configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "prometheus_data:/prometheus"
+    networks:
+      - mirror
+    depends_on:
+      - metrics
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: "8192M"
+
+# Lifetime of "mirror" network is not managed by this compose file
+networks:
+  mirror:
+    external: true
+
+# Lifetime of "prometheus_data" volume is not managed by this compose file
+volumes:
+  prometheus_data:
+    external: true

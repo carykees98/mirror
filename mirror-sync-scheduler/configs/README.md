@@ -1,0 +1,1 @@
+Development configs for mirror-sync-scheduler are located here.

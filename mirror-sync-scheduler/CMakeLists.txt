@@ -15,7 +15,7 @@ FetchContent_Declare(json
 )
 FetchContent_MakeAvailable(json)
 
-add_subdirectory(mirror-logging)
+add_subdirectory(lib/mirror-logging)
 
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC mirror-logging

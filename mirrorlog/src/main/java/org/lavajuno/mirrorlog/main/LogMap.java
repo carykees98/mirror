@@ -11,7 +11,7 @@ public class LogMap {
     /**
      * The path to the program's configuration file
      */
-    public static final String CONFIG_FILE_PATH = "config/mirrorlog.conf.json";
+    public static final String CONFIG_FILE_PATH = "configs/mirrorlog.conf.json";
 
     /**
      * How long ServerController should wait for OutputController to shut down (ms)
