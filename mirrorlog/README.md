@@ -2,13 +2,6 @@
 
 A customizable, multithreaded log server that provides a lot of functionality in a very small package.
 
-[Source Code](https://github.com/lavajuno/mirrorlog)
-
-[Releases](https://github.com/lavajuno/mirrorlog/releases)
-
-[Documentation](docs/jdoc/index.html)
-
-
 ## Features
  - Logging to console and timestamped log files
  - Client-set component names to make searching logs easy
