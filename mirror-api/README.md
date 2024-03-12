@@ -2,12 +2,6 @@
 
 An API that serves data from mirrors.json for COSI's mirror.
 
-[Source Code](https://github.com/lavajuno/mirrorapi)
-
-[Releases](https://github.com/lavajuno/mirrorapi/releases)
-
-[Documentation](https://lavajuno.github.io/mirrorapi/docs/index.html)
-
 Available API mappings:
 - GET `/api/mirrors`: List of all mirrors
 - GET `/api/mirrors/{key}`: Mirror with the given key (ex. "gentoo").
