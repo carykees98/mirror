@@ -85,7 +85,7 @@ services:
       - 8080
     volumes:
       - "/var/log/nginx/access.log:/mirror/access.log:ro"
-      - "./data:mirror_metrics/data"
+      - "./data:/mirror/data"
     networks:
       - mirror
     depends_on:
