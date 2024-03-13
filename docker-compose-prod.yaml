@@ -64,8 +64,8 @@ services:
     build: ./mirror-website-nuxt
     container_name: mirror-website
     restart: unless-stopped
-    expose:
-      - 3000
+    ports:
+      - "3001:3000"
     networks:
       - mirror
     depends_on:
