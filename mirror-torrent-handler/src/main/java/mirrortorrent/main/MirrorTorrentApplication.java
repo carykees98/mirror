@@ -7,31 +7,31 @@ import java.text.ParseException;
 
 import org.lavajuno.lucidjson.JsonArray;
 import org.lavajuno.lucidjson.JsonObject;
-
-import io.github.cdimascio.dotenv.Dotenv;
+import org.lavajuno.lucidjson.JsonString;
 
 import mirrortorrent.torrents.*;
 
 public class MirrorTorrentApplication {    
     public static void main(String[] args){
-        //read torrent folder path from .env file
-        Dotenv dotenv = Dotenv.load();
-        String torrentFolder = dotenv.get("TorrentFolder");
-        String downloadFolder = dotenv.get("DownloadFolder");
 
-        //if torrent folder doesnt exist create it
-        File dir = new File(torrentFolder);
-        if(!dir.exists()){
-            dir.mkdir();
-        }
-
-        File dir2 = new File(downloadFolder);
-        if(!dir2.exists()){
-            dir2.mkdir();
-        }
-
-        //load mirrors.json
         try{
+            //read torrent folder path from env.json file
+            JsonObject env = JsonObject.fromFile("configs/env.json");
+            String torrentFolder = ((JsonString) env.get("torrentFolder")).getValue();
+            String downloadFolder = ((JsonString) env.get("downloadFolder")).getValue();
+
+            //if torrent folder doesnt exist create it
+            File dir = new File(torrentFolder);
+            if(!dir.exists()){
+                dir.mkdir();
+            }
+
+            File dir2 = new File(downloadFolder);
+            if(!dir2.exists()){
+                dir2.mkdir();
+            }
+
+            //load mirrors.json
             JsonObject config = JsonObject.fromFile("configs/mirrors.json");
 
             Thread torrentScrapeThread = new Thread( new ScrapeTorrents((JsonArray) config.get("torrents"), torrentFolder));

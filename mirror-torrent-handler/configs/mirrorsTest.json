@@ -49,7 +49,7 @@
       "publicRsync": true,
       "alternative": "http://mirror.lshiy.com/fakeone/",
       "icon": "img/projects/fakeone.svg",
-      "torrents": "/storage/fakeone/*/isos/*/"
+      "torrents": "../Torrent_Test/fakeone/"
     },
     "faketwo": {
       "name": "faketwo",
@@ -67,7 +67,7 @@
       "publicRsync": true,
       "alternative": "http://mirror.lshiy.com/faketwo/",
       "icon": "img/projects/faketwo.svg",
-      "torrents": "/storage/faketwo/*/isos/*/"
+      "torrents": "../Torrent_Test/faketwo/*/"
     },
     "eclipse": {
       "name": "Eclipse",

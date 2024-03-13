@@ -45,20 +45,23 @@ public class SyncTorrents implements Runnable{
                     String[] flist = f.split("/");
                     String newFilePath = torrentFolder + "/" + flist[flist.length-1];
                     File newFile = new File(newFilePath);
-                    if(newFile.exists()){
-                        continue;
+                    if(!newFile.exists()){
+                        Path oldPath = Paths.get(f);
+                        Path newPath = Paths.get(newFilePath);
+                        Files.createLink(newPath, oldPath);
                     }
-                    Path oldPath = Paths.get(f);
-                    Path newPath = Paths.get(newFilePath);
-                    Files.createLink(newPath, oldPath);
 
                     //add non torrent file to downloads directory if it exists in the same glob
-                    // HashSet<String> downloadFiles = new HashSet<>();
-                    // String newDownloadFile = removeSuffix(flist[flist.length-1], ".torrent");
-                    // downloadFiles.addAll(GlobSearch(glob, "", newDownloadFile));
-                    // for(String fd : downloadFiles){
-                    //     Files.createLink(Paths.get(downloadFiles + "/" + newDownloadFile), Paths.get(fd));
-                    // }
+                    HashSet<String> downloadFiles = new HashSet<>();
+                    String newDownloadFile = removeSuffix(flist[flist.length-1], ".torrent");
+                    downloadFiles.addAll(GlobSearch(glob, "", newDownloadFile));
+                    System.out.println(downloadFiles);
+                    for(String fd : downloadFiles){
+                        File ndf = new File(downloadFolder + "/" + newDownloadFile);
+                        if(!ndf.exists()){
+                            Files.createSymbolicLink(Paths.get(downloadFolder + "/" + newDownloadFile), Paths.get(fd));
+                        }
+                    }
                 }
             }
             catch(IOException e){

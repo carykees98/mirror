@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    container_name: torrent_handler
+    restart: unless-stopped
+    volumes:
+      - "/storage:/storage"
+      - "./configs:/mirror/torrent_handler/configs:ro"
+    networks:
+      - mirror
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4096M
+
+networks:
+  mirror:
+    external: true
