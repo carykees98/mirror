@@ -162,7 +162,6 @@ void Queue::jobQueueThread(){
 
 //sync a project using the commands from the the syncCommands map
 void Queue::syncProject(std::string name){
-    std::cout << name << " started" << std::endl;
     logger->info(name + " started");
     //used to get the status of rsync when it runs
     int status = -1;
@@ -203,11 +202,9 @@ void Queue::syncProject(std::string name){
     }
 
     if(status == 0){
-        std::cout << name << " completed succesfully" << std::endl;
         logger->info(name + " completed succesfully");
     }
     else{
-        std::cout << name << " failed" << std::endl;
         logger->error(name + " failed");
     }
     
