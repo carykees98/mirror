@@ -24,8 +24,8 @@ services:
   api:
     build: ./mirror-api
     container_name: mirror-api
-    expose:
-      - 8080
+    ports:
+      - "30301:8080"
     networks:
       - mirror
     volumes:
