@@ -23,7 +23,8 @@ public abstract class JsonEntity {
         System.err.print(text.substring(pos, Math.min(pos + 12, text.length())));
         System.err.println("...");
         System.err.println("^");
-        System.err.println(explanation + "\n"); /* extra newline */
+        System.err.println(explanation);
+        System.err.println(); // extra newline
         throw new ParseException(explanation, pos);
     }
 
@@ -35,7 +36,7 @@ public abstract class JsonEntity {
      * @throws ParseException If the input does not match any type of entity
      */
     protected static JsonEntity parseEntity(String text, Index i) throws ParseException {
-        while(text.charAt(i.pos) == ' ' || text.charAt(i.pos) == '\t') { i.pos++; }
+        skipSpace(text, i);
         return switch(text.charAt(i.pos)) {
             case '{' -> new JsonObject(text, i);
             case '[' -> new JsonArray(text, i);
@@ -53,8 +54,8 @@ public abstract class JsonEntity {
      * @throws ParseException If the input does not match a pair containing a String and JsonEntity
      */
     protected static Pair<String, JsonEntity> parsePair(String text, Index i) throws ParseException {
-        while(text.charAt(i.pos) == ' ' || text.charAt(i.pos) == '\t') { i.pos++; }
-        String key = (new JsonString(text, i)).getValue();
+        skipSpace(text, i);
+        String key = (new JsonString(text, i)).value();
         skipSpace(text, i);
         if(text.charAt(i.pos) != ':') {
             throwParseError(text, i.pos, "Parsing pair, expected a ':'.");
@@ -65,34 +66,41 @@ public abstract class JsonEntity {
     }
 
     /**
+     * @param c Character to check
+     * @return True if the character is whitespace (space, tab, or newline)
+     */
+    protected static boolean isWhitespace(char c) {
+        return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+    }
+
+    /**
      * Advances the index past any whitespace
      * @param text Text to scan
      * @param i Index of next character to parse
      */
     protected static void skipSpace(String text, Index i) {
-        while(text.charAt(i.pos) == ' ' || text.charAt(i.pos) == '\t') { i.pos++; }
+        while(isWhitespace(text.charAt(i.pos))) { i.pos++; }
     }
 
     /**
-     * Serializes this JsonEntity to a String with newlines and indentation.
+     * Serializes this JsonEntity to a JSON string with newlines and indentation.
      * @param indent Indent of this JsonEntity
      * @return This JsonEntity as a String
      */
-    protected abstract String toString(int indent);
+    protected abstract String toJsonString(int indent);
 
     /**
-     * Serializes this JsonEntity to a String with optional formatting.
-     * @param pretty Whether to use newlines and indents in the output
+     * Serializes this JsonEntity to a JSON string.
+     * @param pretty false to minify, true to use newlines and indents
      * @return This JsonEntity as a String
      */
-    public String toString(boolean pretty) {
-        return pretty ? this.toString(0) : this.toString();
+    public String toJsonString(boolean pretty) {
+        return pretty ? this.toJsonString(0) : this.toJsonString();
     }
 
     /**
-     * Serializes this JsonEntity to a String without any formatting.
-     * @return This JsonEntity as a String
+     * Serializes this JsonEntity to a minified JSON string.
+     * @return This JsonEntity as a JSON string
      */
-    @Override
-    public abstract String toString();
+    public abstract String toJsonString();
 }

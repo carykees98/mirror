@@ -6,6 +6,9 @@ package org.lavajuno.lucidjson.util;
  * and they are constructed.
  */
 public class Index {
+    /**
+     * Integer index of the next character be parsed.
+     */
     public int pos;
 
     /**

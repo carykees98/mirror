@@ -118,6 +118,7 @@ public class Log {
                     socket = new Socket(log_host, log_port);
                     clientOut = socket.getOutputStream();
                     clientOut.write(sb.toString().getBytes(StandardCharsets.UTF_8));
+                    clientOut.flush();
                 } catch(IOException f) {
                     printToConsole(Levels.ERROR, "Logger - Could not reconnect to log server.");
                 }

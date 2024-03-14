@@ -2,13 +2,15 @@ package edu.clarkson.cosi.mirrorapi;
 
 import edu.clarkson.cosi.mirrorapi.error.NotFoundException;
 import edu.clarkson.cosi.mirrorapi.io.Log;
-import org.lavajuno.lucidjson.JsonArray;
+import edu.clarkson.cosi.mirrorapi.state.Mirrors;
 import org.lavajuno.lucidjson.JsonObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 
 /**
@@ -17,11 +19,10 @@ import java.text.ParseException;
 @RestController
 @SuppressWarnings("unused")
 public class MirrorAPIController {
-    private static final String LOG_HOST = "localhost";
+    private static final String LOG_HOST = "mirrorlog";
     private static final int LOG_PORT = 4001;
 
-    private final JsonObject mirrors;
-    private final JsonArray torrents;
+    private final Mirrors mirrors;
     private final Log log;
 
     /**
@@ -30,9 +31,11 @@ public class MirrorAPIController {
      * @throws ParseException If parsing mirrors.json fails
      */
     public MirrorAPIController() throws IOException, ParseException {
-        JsonObject root = JsonObject.fromFile("configs/mirrors.json");
-        mirrors = (JsonObject) root.get("mirrors");
-        torrents = (JsonArray) root.get("torrents");
+        JsonObject root = JsonObject.from(
+                Files.readString(Path.of("configs/mirrors.json"))
+        );
+        mirrors = new Mirrors();
+        mirrors.fromJsonObject((JsonObject) root.get("mirrors"));
         log = Log.getInstance();
         log.configure(LOG_HOST, LOG_PORT, "MirrorAPI");
         log.info("Started API controller.");
@@ -45,7 +48,7 @@ public class MirrorAPIController {
     @GetMapping("/api/mirrors")
     public String getMirrors() {
         log.info("Request for mirror list.");
-        return mirrors.toString();
+        return mirrors.toJsonString();
     }
 
     /**
@@ -57,37 +60,10 @@ public class MirrorAPIController {
     public String getMirror(@PathVariable String key) {
         log.info("Request for mirror \"" + key + "\".");
         try {
-            return mirrors.get(key).toString();
+            return mirrors.get(key).toJsonString();
         } catch(NullPointerException e) {
             log.warn("Mirror \"" + key + "\" not found.");
             throw new NotFoundException();
         }
-    }
-
-    /**
-     * Gets a list of all torrents
-     * @return List of all torrents as JSON
-     */
-    @GetMapping("/api/torrents")
-    public String getTorrents() {
-        log.info("Request for torrent list.");
-        return torrents.toString();
-    }
-
-    /**
-     * Gets a specific torrent
-     * @param index The torrent's index
-     * @return The torrent as JSON, or a 404 if it is not found.
-     */
-    @GetMapping("/api/torrents/{index}")
-    public String getTorrent(@PathVariable int index) {
-        log.info("Request for torrent \"" + index + "\".");
-        try {
-            return torrents.get(index).toString();
-        } catch(NullPointerException e) {
-            log.warn("Torrent \"" + index + "\" not found.");
-            throw new NotFoundException();
-        }
-
     }
 }
