@@ -29,7 +29,7 @@ services:
     networks:
       - mirror
     volumes:
-      - "./configs/mirrors.json:/mirrorapi/mirrors.json:ro"
+      - "./configs/mirrors.json:/mirror/configs/mirrors.json:ro"
     depends_on:
       - log-server
     deploy:
