@@ -76,8 +76,14 @@ void update_schedule_thread(){
     Schedule* schedule = Schedule::getInstance();
 
     while(true){
-        //sleep for 12 hours
-        std::this_thread::sleep_for(std::chrono::hours(12));
+        //calculate seconds_since_midnight
+        std::time_t now = std::time(0);
+        std::tm* tm_gmt = std::gmtime(&now);
+        int seconds_since_midnight_gmt = tm_gmt->tm_sec + (tm_gmt->tm_min*60) +  (tm_gmt->tm_hour*3600);
+
+        //sleep till 12:30am gmt 
+        //88200 = 1 day + 30 minutes
+        std::this_thread::sleep_for(std::chrono::seconds(88200 - seconds_since_midnight_gmt));
     
         //retrieve the mirror data from mirrors.json
         json config = readJSONFromFile("configs/mirrors.json");
