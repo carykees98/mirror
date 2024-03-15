@@ -70,12 +70,38 @@ void keep_alive_thread(){
     }
 }
 
+//thread that updates the schedule every 12 hours
+void update_schedule_thread(){
+    //create a pointer to the schedule
+    Schedule* schedule = Schedule::getInstance();
+
+    while(true){
+        //calculate seconds_since_midnight
+        std::time_t now = std::time(0);
+        std::tm* tm_gmt = std::gmtime(&now);
+        int seconds_since_midnight_gmt = tm_gmt->tm_sec + (tm_gmt->tm_min*60) +  (tm_gmt->tm_hour*3600);
+
+        //sleep till 12:30am gmt 
+        //88200 = 1 day + 30 minutes
+        std::this_thread::sleep_for(std::chrono::seconds(88200 - seconds_since_midnight_gmt));
+    
+        //retrieve the mirror data from mirrors.json
+        json config = readJSONFromFile("configs/mirrors.json");
+
+        //build the schedule based on the mirrors.json config
+        schedule->build(config["mirrors"]);
+        //set reloaded flag for main thread
+        schedule->reloaded = true;
+        std::cout << "Reloaded mirrors.json" << std::endl;
+    }
+}
+
 int main(){
     //ctrl c signal handler
     signal(SIGINT, intHandler);
 
     //read env data in from env.json
-    json env = readJSONFromFile("configs/env.json");
+    json env = readJSONFromFile("configs/sync-scheduler-env.json");
 
     //read mirror data in from mirrors.json
     json config = readJSONFromFile("configs/mirrors.json");
@@ -103,6 +129,9 @@ int main(){
 
     //cin thread for program input
     std::thread ct(cin_thread);
+
+    //update schedule thread
+    std::thread ust(update_schedule_thread);
 
     std::vector<std::string>* name;
     int seconds_to_sleep;
