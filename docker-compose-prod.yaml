@@ -59,6 +59,24 @@ services:
     stdin_open: true
     tty: true
 
+  # --- Torrent handler ---
+  torrent-handler:
+    build: ./mirror-torrent-handler
+    container_name: mirror-torrent-handler
+    restart: unless-stopped
+    volumes:
+      - "/storage:/storage"
+      - "./configs:/mirror/configs:ro"
+    networks:
+      - mirror
+    depends_on:
+      - log-server
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "4096M"
+
   # --- Website ---
   website:
     build: ./mirror-website-nuxt

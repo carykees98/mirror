@@ -54,9 +54,26 @@ services:
       resources:
         limits:
           cpus: "8.0"
-          memory: "16384M"
+          memory: "4096M"
     stdin_open: true
     tty: true
+
+  # --- Torrent handler ---
+  torrent-handler:
+    build: ./mirror-torrent-handler
+    container_name: mirror-torrent-handler
+    volumes:
+      - "./mirror-torrent-handler/storage:/storage"
+      - "./mirror-torrent-handler/configs:/mirror/configs:ro"
+    networks:
+      - mirror
+    depends_on:
+      - log-server
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "4096M"
 
   # --- Website ---
   website:

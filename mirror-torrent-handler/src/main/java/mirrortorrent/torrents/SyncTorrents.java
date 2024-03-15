@@ -32,18 +32,34 @@ public class SyncTorrents implements Runnable{
                 continue;
             }
 
-            String glob = ((JsonString) projectConfig.get("torrents")).getValue();
-            HashSet<String> torrentFiles = new HashSet<>();
-            System.out.println(glob);
-
             try{
+                //get the glob string for the mirrors.json project
+                String glob = ((JsonString) projectConfig.get("torrents")).getValue();
+                System.out.println(glob);
+
                 //Find all torrent files from the given glob
+                HashSet<String> torrentFiles = new HashSet<>();
                 torrentFiles.addAll(GlobSearch(glob, "", ".torrent"));
+
+                //skip till next project if no torrent files found 
+                if(torrentFiles.isEmpty()){
+                    continue;
+                }
+
+                //add folders to contain this projects torrent files if they dont exist
+                File torrentFolderName = new File(torrentFolder + "/" + name);
+                File downloadFolderName = new File(downloadFolder + "/" + name);
+                if(!torrentFolderName.exists()){
+                    torrentFolderName.mkdir();
+                }
+                if(!downloadFolderName.exists()){
+                    downloadFolderName.mkdir();
+                }
 
                 //Create a hard link for each torrent file
                 for(String f : torrentFiles){
                     String[] flist = f.split("/");
-                    String newFilePath = torrentFolder + "/" + flist[flist.length-1];
+                    String newFilePath = torrentFolder + "/" + name + "/" + flist[flist.length-1];
                     File newFile = new File(newFilePath);
                     if(!newFile.exists()){
                         Path oldPath = Paths.get(f);
@@ -52,14 +68,14 @@ public class SyncTorrents implements Runnable{
                     }
 
                     //add non torrent file to downloads directory if it exists in the same glob
-                    HashSet<String> downloadFiles = new HashSet<>();
                     String newDownloadFile = removeSuffix(flist[flist.length-1], ".torrent");
+                    String newDownloadFilePath = downloadFolder + "/" + name + "/" + newDownloadFile;
+                    HashSet<String> downloadFiles = new HashSet<>();
                     downloadFiles.addAll(GlobSearch(glob, "", newDownloadFile));
-                    System.out.println(downloadFiles);
                     for(String fd : downloadFiles){
-                        File ndf = new File(downloadFolder + "/" + newDownloadFile);
+                        File ndf = new File(newDownloadFilePath);
                         if(!ndf.exists()){
-                            Files.createSymbolicLink(Paths.get(downloadFolder + "/" + newDownloadFile), Paths.get(fd));
+                            Files.createLink(Paths.get(newDownloadFilePath), Paths.get(fd));
                         }
                     }
                 }
