@@ -5,6 +5,10 @@ import org.lavajuno.lucidjson.JsonObject;
 import org.lavajuno.lucidjson.JsonSerializable;
 import org.lavajuno.lucidjson.JsonString;
 
+/**
+ * Mirror represents a single project that we mirror.
+ * Each Mirror's info is shown on a content card to visitors.
+ */
 public class Mirror implements JsonSerializable {
     private String name;
     private String page;

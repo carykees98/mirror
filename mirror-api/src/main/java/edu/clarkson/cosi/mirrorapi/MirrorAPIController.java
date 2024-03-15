@@ -23,6 +23,7 @@ public class MirrorAPIController {
     private static final int LOG_PORT = 4001;
 
     private final Mirrors mirrors;
+    private final String mirrors_cached;
     private final Log log;
 
     /**
@@ -31,13 +32,15 @@ public class MirrorAPIController {
      * @throws ParseException If parsing mirrors.json fails
      */
     public MirrorAPIController() throws IOException, ParseException {
+        log = Log.getInstance();
+        log.configure(LOG_HOST, LOG_PORT, "MirrorAPI");
+        log.info("Reading mirrors...");
         JsonObject root = JsonObject.from(
                 Files.readString(Path.of("configs/mirrors.json"))
         );
         mirrors = new Mirrors();
         mirrors.fromJsonObject((JsonObject) root.get("mirrors"));
-        log = Log.getInstance();
-        log.configure(LOG_HOST, LOG_PORT, "MirrorAPI");
+        mirrors_cached = mirrors.toJsonString(); // cache mirror list response
         log.info("Started API controller.");
     }
 
@@ -48,7 +51,7 @@ public class MirrorAPIController {
     @GetMapping("/api/mirrors")
     public String getMirrors() {
         log.info("Request for mirror list.");
-        return mirrors.toJsonString();
+        return mirrors_cached;
     }
 
     /**

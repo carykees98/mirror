@@ -6,6 +6,10 @@ import org.lavajuno.lucidjson.JsonSerializable;
 import java.util.Collection;
 import java.util.TreeMap;
 
+/**
+ * Mirrors stores a map of projects that we mirror.
+ * It can be queried for single mirrors, or serialized to JSON.
+ */
 public class Mirrors implements JsonSerializable {
     private final TreeMap<String, Mirror> mirrors_map;
 
