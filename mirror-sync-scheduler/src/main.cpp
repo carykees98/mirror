@@ -6,6 +6,7 @@
 #include <fstream>
 #include <atomic>
 #include <signal.h>
+#include <sys/stat.h>
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -39,21 +40,7 @@ void cin_thread(){
     while(true){
         std::string x;
         std::cin >> x;
-        //reload the sync scheduler
-        if(x == "reload"){
-            //read mirror data in from mirrors.json
-            json config = readJSONFromFile("configs/mirrors.json");
-
-            //build the schedule based on the mirrors.json config
-            schedule->build(config["mirrors"]);
-            //set reloaded flag for main thread
-            schedule->reloaded = true;
-            std::cout << "Reloaded mirrors.json" << std::endl;
-        }
-        //manually sync a project in a detached thread
-        else{
-            queue->manual_sync(x);
-        }
+        queue->manual_sync(x);
     }
 }
 
@@ -70,29 +57,38 @@ void keep_alive_thread(){
     }
 }
 
-//thread that updates the schedule every 12 hours
+//thread that updates the schedule
 void update_schedule_thread(){
     //create a pointer to the schedule
     Schedule* schedule = Schedule::getInstance();
+    //create a pointer to the queue
+    Queue* queue = Queue::getInstance();
+
+    //strunct to store file information about mirrors.json
+    struct stat mirrorsFile;
+    //initialize the struct
+    stat("configs/mirrors.json", &mirrorsFile);
 
     while(true){
-        //calculate seconds_since_midnight
-        std::time_t now = std::time(0);
-        std::tm* tm_gmt = std::gmtime(&now);
-        int seconds_since_midnight_gmt = tm_gmt->tm_sec + (tm_gmt->tm_min*60) +  (tm_gmt->tm_hour*3600);
-
-        //sleep till 12:30am gmt 
-        //88200 = 1 day + 30 minutes
-        std::this_thread::sleep_for(std::chrono::seconds(88200 - seconds_since_midnight_gmt));
+        //sleep for 7 seconds because its the smallest number that doesnt divide 60
+        std::this_thread::sleep_for(std::chrono::seconds(7));
+        
+        //calculate old and new modification times
+        int oldModTime = mirrorsFile.st_mtime;
+        stat("configs/mirrors.json", &mirrorsFile);
     
-        //retrieve the mirror data from mirrors.json
-        json config = readJSONFromFile("configs/mirrors.json");
+        if(oldModTime != mirrorsFile.st_mtime){
+            //retrieve the mirror data from mirrors.json
+            json config = readJSONFromFile("configs/mirrors.json");
 
-        //build the schedule based on the mirrors.json config
-        schedule->build(config["mirrors"]);
-        //set reloaded flag for main thread
-        schedule->reloaded = true;
-        std::cout << "Reloaded mirrors.json" << std::endl;
+            //build the schedule based on the mirrors.json config
+            schedule->build(config["mirrors"]);
+            //create a new sync commnad map
+            queue->createSyncCommandMap(config["mirrors"]);
+            //set reloaded flag for main thread
+            schedule->reloaded = true;
+            std::cout << "Reloaded mirrors.json" << std::endl;
+        }
     }
 }
 
