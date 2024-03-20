@@ -1,0 +1,105 @@
+/* ----- Overrides ----- */
+body {
+    font-family: sans-serif;
+    font-size: 18px;
+    background: linear-gradient(
+        rgb(255,255,255) 0%,
+        rgb(245,245,250) 70%,
+        rgb(235, 235, 240) 100%
+    );
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+h1 {
+    font-size: 48px;
+    margin: 16px 0;
+}
+
+h2 {
+    font-size: 36px;
+    margin: 16px 0;
+}
+
+h3 {
+    font-size: 28px;
+    margin: 12px 0;
+}
+
+p {
+    line-height: 1.25;
+}
+
+.section_header {
+    width: 100%;
+    max-width: 1000px;
+    margin: 24px auto 16px auto;
+}
+
+
+/* ----- Mirror content cards ----- */
+
+.mirror_container {
+    width: 100%;
+    max-width: 1000px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: auto 250px;
+    border-radius: 5px;
+    margin: 32px auto 32px auto;
+    background: rgb(255,255,255);
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+}
+
+.mirror_text {
+    padding: 16px;
+
+}
+
+.mirror_icon {
+    width: 250px;
+    height: auto;
+    margin-left: auto;
+    margin-right: 0;
+    border-radius: 5px;
+}
+
+/* ----- Navigation bar ----- */
+
+.navbar_container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    background: rgb(0, 31, 26);
+    color: white;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+}
+
+.navbar_link {
+    padding: 16px 20px;
+    margin: 0;
+    box-sizing: border-box;
+    display: inline-block;
+    border-bottom: 2px solid rgba(255,255,255,0);
+    transition-duration: 100ms;
+}
+.navbar_link:hover {
+    background-color: rgb(0,62,54);
+    cursor: pointer;
+}
+
+.navbar_active {
+    background: rgb(0, 41, 36);
+    border-bottom: 2px solid rgb(255,255,255);
+}
+
+.navbar_spacer {
+    height: 50px;
+}
