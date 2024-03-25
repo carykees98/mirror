@@ -66,7 +66,6 @@ p {
 
 .mirror_text {
     padding: 16px;
-
 }
 
 .mirror_icon {
@@ -147,7 +146,7 @@ p {
 .banner_container {
     width: 100%;
     margin: 0;
-    padding: 100px 0;
+    padding: 120px 0;
     box-sizing: border-box;
     background-image: url(img/banner.jpg);
     background-position: center;
