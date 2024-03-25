@@ -17,6 +17,11 @@ h1 {
     font-size: 48px;
     margin: 16px 0;
 }
+@media screen and (max-width: 400px) {
+    h1 {
+        font-size: 72px;
+    }
+}
 
 h2 {
     font-size: 36px;
@@ -87,6 +92,7 @@ p {
     padding: 0;
     overflow-x: scroll;
     overflow-y: hidden;
+    text-wrap: nowrap;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
 }
 
