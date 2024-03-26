@@ -68,6 +68,9 @@ p {
 a {
     color: var(--link_text_color);
 }
+a:hover {
+    cursor: pointer;
+}
 
 /* ----- Content ----- */
 .content_container {

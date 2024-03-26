@@ -69,7 +69,11 @@ function renderTitle(mirror) {
 
 function renderIcon(mirror) {
     if(mirror.icon == "") { return ""; }
-    return `<img class="mirror_icon" loading="lazy" src="${mirror.icon}">`;
+    return `<img class="mirror_icon" src="${mirror.icon}">`;
+}
+
+function handleJump(id) {
+    document.getElementById(id).scrollIntoView({behavior: "smooth"});
 }
 
 /* --- On page load --- */
