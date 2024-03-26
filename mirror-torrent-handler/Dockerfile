@@ -8,9 +8,7 @@ COPY ./pom.xml /mirror/pom.xml
 RUN mvn clean package
 
 FROM eclipse-temurin:17
-RUN mkdir -p /mirror/torrent_handler
 WORKDIR /mirror
-COPY --from=builder /torrent_handler/target/mirrortorrent-*-jar-with-dependencies.jar ./torrent_handler.jar
+COPY --from=builder /mirror/target/mirrortorrent-*-jar-with-dependencies.jar ./torrent_handler.jar
 RUN chmod 744 torrent_handler.jar
-
-ENTRYPOINT ["java", "-jar", "/mirror/torrent_handler/torrent_handler.jar"]
+ENTRYPOINT ["java", "-jar", "./torrent_handler.jar"]
