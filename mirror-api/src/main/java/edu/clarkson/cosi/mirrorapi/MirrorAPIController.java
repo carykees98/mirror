@@ -33,7 +33,7 @@ public class MirrorAPIController {
      */
     public MirrorAPIController() throws IOException, ParseException {
         log = Log.getInstance();
-        log.configure(LOG_HOST, LOG_PORT, "MirrorAPI");
+        log.configure(LOG_HOST, LOG_PORT, "API");
         log.info("Reading mirrors...");
         JsonObject root = JsonObject.from(
                 Files.readString(Path.of("configs/mirrors.json"))
