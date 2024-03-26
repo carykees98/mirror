@@ -2,6 +2,7 @@
 :root {
     --primary_text_color: black;
     --secondary_text_color: white;
+    --link_text_color: rgb(0,50,125);
     --primary_bg: white;
     --page_gradient: linear-gradient(
         rgb(255,255,255) 0%,
@@ -16,6 +17,7 @@
 [color_theme="dark"] {
     --primary_text_color: white;
     --secondary_text_color: white;
+    --link_text_color: rgb(180,220,255);
     --primary_bg: black;
     --page_gradient: linear-gradient(
         rgb(15,15,20) 0%,
@@ -61,6 +63,10 @@ h3 {
 
 p {
     line-height: 1.25;
+}
+
+a {
+    color: var(--link_text_color);
 }
 
 /* ----- Content ----- */
