@@ -11,7 +11,7 @@ services:
       - 4001
     volumes:
       - "./mirrorlog/logs:/mirror/logs"
-      - "./mirrorlog/configs/mirrorlog.conf.json:/mirror/configs/mirrorlog.conf.json:ro"
+      - "./mirrorlog/configs:/mirror/configs:ro"
     networks:
       - mirror
     deploy:
@@ -29,7 +29,7 @@ services:
     networks:
       - mirror
     volumes:
-      - "./mirror-api/configs/mirrors.json:/mirrorapi/mirrors.json:ro"
+      - "./mirror-api/configs:/mirror/configs:ro"
     depends_on:
       - log-server
     deploy:
@@ -76,18 +76,18 @@ services:
           memory: "4096M"
 
   # --- Website ---
-  website:
-    build: ./mirror-website-nuxt
-    container_name: mirror-website
-    expose:
-      - 3000
-    networks:
-      - mirror
-    deploy:
-      resources:
-        limits:
-          cpus: "4.0"
-          memory: "8192M"
+#  website:
+#    build: ./mirror-website-nuxt
+#    container_name: mirror-website
+#    expose:
+#      - 3000
+#    networks:
+#      - mirror
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "4.0"
+#          memory: "8192M"
   
   # --- Metrics engine ---
   metrics:
@@ -96,7 +96,7 @@ services:
     expose:
       - 8080
     volumes:
-      - "./mirror-metrics/access.log:/mirror/access.log:ro"
+      - "./mirror-metrics/nginx:/mirror/nginx:ro"
       - "./mirror-metrics/data:/mirror/data"
     networks:
       - mirror
