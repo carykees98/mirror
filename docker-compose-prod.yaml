@@ -10,7 +10,7 @@ services:
     expose:
       - 4001
     volumes:
-      - "./logs:/mirror/mirrorlog/logs"
+      - "./logs:/mirror/logs"
       - "./configs:/mirror/configs:ro"
     networks:
       - mirror
