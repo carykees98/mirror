@@ -53,7 +53,7 @@ public class ServerThread extends Thread {
             // Loop while the stream is open
             while(inFromClient.hasNext()) {
                 String line = inFromClient.nextLine();
-                if(line.matches("^@[0-9A-Za-z_-]{1,128}@[0-3].*$")) {
+                if(line.matches("^@[0-9A-Za-z_ -]{1,128}@[0-3].*$")) {
                     String[] fragments = line.split("@", 3);
                     // Submit log event and respond
                     outputController.submitEvent(
