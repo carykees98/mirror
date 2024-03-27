@@ -64,7 +64,7 @@ int main() {
             getline(std::cin, line);
             mirror::Event event(line);
             if(event > last_event) {
-                logger->warn("Last seen event was not found in the NGINX log."
+                logger->warn("Last seen event was not found in the NGINX log. "
                         "Continuing from here.");
                 break;
             }
@@ -84,19 +84,19 @@ int main() {
         std::string line;
         getline(std::cin, line);
         mirror::Event event(line);
-        logger->debug(event.toString());
+        //logger->debug(event.toString());
 
         // Register event with Prometheus
         std::string project = event.getProject();
         if(project.size() > 0) {
-            logger->debug("Hit on project " + project + ".");
+            //logger->debug("Hit on project " + project + ".");
             state.registerHit(project);
             hit_counter.Add({{"project", project}}).Increment();
             state.registerBytesSent(project, event.getBytesSent());
             byte_counter.Add({{"project", project}}).Increment(event.getBytesSent());
             state.registerLastEvent(line);
         } else {
-            logger->debug("Hit - Invalid path / request.");
+            //logger->debug("Hit - Invalid path or request.");
             hit_counter.Add({{"project", "invalid"}}).Increment();
             byte_counter.Add({{"project", project}}).Increment(event.getBytesSent());
         }
