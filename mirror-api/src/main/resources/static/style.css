@@ -11,6 +11,7 @@
     );
     --navbar_bg: rgb(0, 31, 26);
     --navbar_selected_bg: rgb(0,62,54);
+    --icon_accent_color: rgb(0,62,54);
     --footer_bg: rgb(0, 31, 26);
 }
 
@@ -26,12 +27,14 @@
     );
     --navbar_bg: rgb(0, 31, 26);
     --navbar_selected_bg: rgb(0,62,54);
+    --icon_accent_color: rgb(0,126,108);
     --footer_bg: rgb(0, 31, 26);
 }
 
 /* ----- Overrides ----- */
+
 body {
-    font-family: sans-serif;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 18px;
     background: var(--page_gradient);
     background-attachment: fixed;
@@ -70,46 +73,6 @@ a {
 }
 a:hover {
     cursor: pointer;
-}
-
-/* ----- Content ----- */
-.content_container {
-    width: 98%;
-    max-width: 800px;
-    padding: 0 16px;
-    margin: 32px auto 32px auto;
-}
-
-/* ----- Mirror content cards ----- */
-.mirror_header {
-    width: 98%;
-    max-width: 1000px;
-    margin: 32px auto 16px auto;
-}
-
-.mirror_container {
-    width: 98%;
-    max-width: 1000px;
-    padding: 0;
-    display: grid;
-    grid-template-columns: auto 300px;
-    border-radius: 5px;
-    margin: 32px auto 32px auto;
-    background: var(--primary_bg);
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
-}
-
-.mirror_text {
-    padding: 16px;
-}
-
-.mirror_icon {
-    width: 250px;
-    height: auto;
-    max-height: 300px;
-    margin: 16px 16px 16px auto;
-    border-radius: 5px;
-    background: white;
 }
 
 /* ----- Navigation bar ----- */
@@ -158,12 +121,43 @@ a:hover {
     height: 50px;
 }
 
-.navbar_theme {
-    right: 0;
-    /*float: right;*/
+/* ----- Banner ----- */
+
+.banner_container {
+    width: 100%;
+    margin: 0;
+    padding: 120px 0;
+    box-sizing: border-box;
+    background-image: url(img/banner.jpg);
+    background-position: center;
+    background-size: cover;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+}
+
+.banner_content {
+    width: 98%;
+    max-width: 1000px;
+    text-align: center;
+    margin: 0 auto;
+    color: var(--secondary_text_color);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* ----- Content ----- */
+
+.content_container {
+    width: 98%;
+    max-width: 800px;
+    padding: 0 16px;
+    margin: 32px auto 32px auto;
+}
+
+.icon {
+    color: var(--icon_accent_color);
 }
 
 /* ----- Footer ----- */
+
 .footer_container {
     width: 100%;
     margin: 64px 0 0 0;
@@ -186,27 +180,39 @@ a:hover {
     font-weight: bold;
 }
 
-/* ----- Banner ----- */
-.banner_container {
-    width: 100%;
-    margin: 0;
-    padding: 120px 0;
-    box-sizing: border-box;
-    background-image: url(img/banner.jpg);
-    background-position: center;
-    background-size: cover;
-    box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
-}
 
-.banner_content {
+
+
+
+/* ----- Mirror list ----- */
+
+.mirror_header {
     width: 98%;
     max-width: 1000px;
-    text-align: center;
-    margin: 0 auto;
-    color: var(--secondary_text_color);
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin: 32px auto 16px auto;
 }
 
-.icon {
-    color: var(--navbar_selected_bg);
+.mirror_container {
+    width: 98%;
+    max-width: 1000px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: auto 300px;
+    border-radius: 5px;
+    margin: 32px auto 32px auto;
+    background: var(--primary_bg);
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+}
+
+.mirror_text {
+    padding: 16px;
+}
+
+.mirror_icon {
+    width: 250px;
+    height: auto;
+    max-height: 300px;
+    margin: 16px 16px 16px auto;
+    border-radius: 5px;
+    background: white;
 }
