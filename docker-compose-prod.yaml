@@ -24,6 +24,7 @@ services:
   api:
     build: ./mirror-api
     container_name: mirror-api
+    restart: unless-stopped
     ports:
       - "30301:8080"
     networks:
