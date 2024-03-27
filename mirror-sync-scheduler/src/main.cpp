@@ -104,7 +104,7 @@ int main(){
 
     //initialize and configure connection to log server
     mirror::Logger* logger = mirror::Logger::getInstance();
-    logger->configure(env["logServerPort"], "sync-scheduler", env["logServerHost"]);
+    logger->configure(env["logServerPort"], "Sync Scheduler", env["logServerHost"]);
 
     //create and build new schedule
     Schedule* schedule = Schedule::getInstance();
@@ -161,8 +161,7 @@ int main(){
     }
 
     //program cleanup
-    logger->fatal("Program Cleanly Exiting. (Probably ctrl c)");
-    std::cout << "Program Cleanly Exiting. (Probably ctrl c)" << std::endl;
+    logger->info("Shutting down gracefully...");
     //make sure there is enough time for the logger to send a message before freeing.
     std::this_thread::sleep_for(std::chrono::seconds(1));
     logger->close();
