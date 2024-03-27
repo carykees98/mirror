@@ -38,7 +38,7 @@ function renderMirror(mirror, i) {
                 ${renderTitle(mirror)}
                 <p>
                     HTTP: 
-                    <a href="http://mirror.clarkson.edu/${i}">
+                    <a href="/${i}">
                         http://mirror.clarkson.edu/${i}
                     </a>
                 </p>
