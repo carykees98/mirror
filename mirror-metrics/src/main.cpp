@@ -93,12 +93,12 @@ int main() {
             state.registerHit(project);
             hit_counter.Add({{"project", project}}).Increment();
             state.registerBytesSent(project, event.getBytesSent());
-            byte_counter.Add({{"project", project}}).Increment(event.getBytesSent());
+            byte_counter.Add({{"project", project}}).Increment((double) event.getBytesSent());
             state.registerLastEvent(line);
         } else {
             //logger->debug("Hit - Invalid path or request.");
             hit_counter.Add({{"project", "invalid"}}).Increment();
-            byte_counter.Add({{"project", project}}).Increment(event.getBytesSent());
+            byte_counter.Add({{"project", project}}).Increment((double) event.getBytesSent());
         }
 
         // Periodically save state to disk
