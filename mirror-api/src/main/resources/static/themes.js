@@ -1,4 +1,3 @@
-
 function handleThemeToggle() {
     let current_theme = document.documentElement.getAttribute("color_theme");
     if(current_theme == "dark") {
