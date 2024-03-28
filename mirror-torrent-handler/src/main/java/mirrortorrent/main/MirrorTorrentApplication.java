@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import org.lavajuno.lucidjson.JsonArray;
+import org.lavajuno.lucidjson.JsonNumber;
 import org.lavajuno.lucidjson.JsonObject;
 import org.lavajuno.lucidjson.JsonString;
 
@@ -25,7 +26,7 @@ public class MirrorTorrentApplication {
             String torrentFolder = ((JsonString) env.get("torrentFolder")).getValue();
             String downloadFolder = ((JsonString) env.get("downloadFolder")).getValue();
             String logServerHost = ((JsonString) env.get("logServerHost")).getValue();
-            int logServerPort = Integer.parseInt(((JsonString) env.get("logServerHost")).getValue());
+            int logServerPort = ((JsonNumber) env.get("logServerPort")).getInt();
 
             Log log = Log.getInstance();
             log.configure(logServerHost, logServerPort, "Torrent Handler");
