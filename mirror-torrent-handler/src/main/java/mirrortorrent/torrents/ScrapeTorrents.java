@@ -18,6 +18,7 @@ import org.lavajuno.lucidjson.JsonArray;
 import org.lavajuno.lucidjson.JsonObject;
 import org.lavajuno.lucidjson.JsonString;
 
+import mirrortorrent.io.*;
 
 public class ScrapeTorrents implements Runnable{
     
@@ -32,6 +33,7 @@ public class ScrapeTorrents implements Runnable{
     }
 
     public void run(){
+        Log log = Log.getInstance();
 
         for(int i = 0; i < torrentArray.size(); i++){
             JsonObject o = (JsonObject) torrentArray.get(i);
@@ -43,10 +45,12 @@ public class ScrapeTorrents implements Runnable{
             System.out.println(projectName);
 
             if(!projectName.equals("documentfoundation")){
+                log.info("scraping torrents for " + projectName);
                 HashSet<String> links = scrapeLinks(projectUrl, ".torrent");
                 downloadFileList(links, torrentFolder + "/" + projectName);
             }
             else{
+                log.info("scraping torrents for libreoffice");
                 HashSet<String> links = scrapeLibreOfficeTorrentLinks(projectUrl, 5);
                 downloadFileList(links, torrentFolder + "/libreoffice");
             }
