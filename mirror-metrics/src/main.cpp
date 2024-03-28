@@ -14,20 +14,31 @@
 
 #include <zmq.hpp>
 
+/**
+ * The interval at which counters' state is saved to the disk. (Seconds)
+ * 1.0 is a good default.
+*/
 #define STATE_UPDATE_INTERVAL 1.0
+
+#define LOG_SERVER_ADDRESS "mirrorlog"
+
+#define LOG_SERVER_PORT 4001
 
 using namespace mirror;
 
 int main() {
     // Connect to log server
     Logger* logger = Logger::getInstance();
-    logger->configure(4001, "Metrics Engine", "mirrorlog");
+    logger->configure(LOG_SERVER_PORT, "Metrics Engine", LOG_SERVER_ADDRESS);
 
+    // Create publisher socket
     zmq::context_t socketContext(1, 1);
     zmq::socket_t pubSocket{socketContext, zmq::socket_type::pub};
     pubSocket.bind("tcp://0.0.0.0:8081");
 
-    // Restore application state from disk
+    logger->info("Loading last state...");
+
+    // Load state from disk (do not configure yet)
     State state;
 
     logger->info("Configuring Prometheus...");
@@ -48,6 +59,8 @@ int main() {
             .Name("bytes_sent")
             .Help("Bytes sent per project")
             .Register(*registry);
+
+    logger->info("Restoring state...");
 
     // Restore counters' state
     for(auto const &i : state.getHits()) {
@@ -82,7 +95,7 @@ int main() {
     std::chrono::time_point<std::chrono::system_clock> last_updated = 
             std::chrono::system_clock::now();
 
-    logger->info("Ready to process events.");
+    logger->info("Ready.");
 
     // Start processing events
     while(true) {
