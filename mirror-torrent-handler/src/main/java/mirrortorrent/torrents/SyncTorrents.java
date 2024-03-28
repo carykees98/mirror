@@ -11,6 +11,8 @@ import java.util.HashSet;
 import org.lavajuno.lucidjson.JsonObject;
 import org.lavajuno.lucidjson.JsonString;
 
+import mirrortorrent.io.*;
+
 public class SyncTorrents implements Runnable{
 
     private JsonObject mirrorConfig;
@@ -24,6 +26,7 @@ public class SyncTorrents implements Runnable{
     }
 
     public void run(){
+        Log log = Log.getInstance();
 
         for(String name : mirrorConfig.getKeys()){
             JsonObject projectConfig = (JsonObject) mirrorConfig.get(name);
@@ -31,6 +34,8 @@ public class SyncTorrents implements Runnable{
             if(projectConfig.get("torrents") == null){
                 continue;
             }
+            
+            log.info("syncing torrents for " + name);
 
             try{
                 //get the glob string for the mirrors.json project
