@@ -39,7 +39,11 @@ namespace mirror {
         return s.str();
     }
 
-
+    std::string Event::toMapString() {
+        std::stringstream s;
+        s << project << ":" << bytes_sent << "\n";
+        return s.str();
+    }
 
     /* ----- Private ----- */
 

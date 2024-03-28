@@ -12,6 +12,8 @@
 #include <thread>
 #include <csignal>
 
+#include <zmq.hpp>
+
 #define STATE_UPDATE_INTERVAL 1.0
 
 using namespace mirror;
@@ -20,6 +22,10 @@ int main() {
     // Connect to log server
     Logger* logger = Logger::getInstance();
     logger->configure(4001, "Metrics Engine", "mirrorlog");
+
+    zmq::context_t socketContext(1, 1);
+    zmq::socket_t pubSocket{socketContext, zmq::socket_type::pub};
+    pubSocket.bind("tcp://0.0.0.0:8081");
 
     // Restore application state from disk
     State state;
@@ -95,6 +101,8 @@ int main() {
             state.registerBytesSent(project, event.getBytesSent());
             byte_counter.Add({{"project", project}}).Increment((double) event.getBytesSent());
             state.registerLastEvent(line);
+            zmq::message_t message{event.toMapString()};
+            pubSocket.send(message, zmq::send_flags::none);
         } else {
             //logger->debug("Hit - Invalid path or request.");
             hit_counter.Add({{"project", "invalid"}}).Increment();

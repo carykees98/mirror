@@ -38,7 +38,7 @@ namespace mirror {
     }
 
     void State::save() {
-        logger->info("Saving application state...");
+        logger->debug("Saving application state...");
         json j;
         j["hits"] = hits;
         j["bytes_sent"] = bytes_sent;

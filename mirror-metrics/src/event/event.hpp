@@ -28,6 +28,11 @@ namespace mirror {
         std::string toString();
 
         /**
+         * @returns Only the necessary data from this Event for Map as a string
+        */
+        std::string toMapString();
+
+        /**
          * @returns This Event's status
         */
         uint16_t getStatus() { return status; }

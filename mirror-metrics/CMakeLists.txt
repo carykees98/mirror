@@ -51,5 +51,6 @@ link_libraries(
     event
     prometheus-cpp::pull
     state
+    zmq
 )
 add_executable(mirror-metrics src/main.cpp)
