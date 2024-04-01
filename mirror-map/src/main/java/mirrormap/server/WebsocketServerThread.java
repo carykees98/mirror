@@ -1,6 +1,7 @@
 package mirrormap.server;
 import mirrormap.io.HttpRequest;
 import mirrormap.io.HttpResponse;
+import mirrormap.io.WebsocketFrame;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,12 +13,12 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.Base64;
 
-public class ServerThread extends Thread {
+public class WebsocketServerThread extends Thread {
     private final Socket socket;
     private final InputStream in;
     private final OutputStream out;
 
-    public ServerThread(Socket socket) throws IOException {
+    public WebsocketServerThread(Socket socket) throws IOException {
         this.socket = socket;
         in = socket.getInputStream();
         out = socket.getOutputStream();
@@ -35,21 +36,39 @@ public class ServerThread extends Thread {
             res.setHeader("Sec-WebSocket-Accept", getWsAccept(ws_key));
             out.write(res.toBytes());
 
+            WebsocketController.getInstance().register(this);
+
         } catch(ParseException e) {
+            WebsocketController.getInstance().deregister(this);
+            System.err.println("WebsocketServerThread encountered a ParseException.");
             e.printStackTrace();
         } catch(NoSuchAlgorithmException e) {
+            WebsocketController.getInstance().deregister(this);
+            System.err.println("WebsocketServerThread encountered a NoSuchAlgorithmException.");
             e.printStackTrace();
         } catch(IOException e) {
+            WebsocketController.getInstance().deregister(this);
+            System.err.println("WebsocketServerThread encountered an IOException.");
             e.printStackTrace();
         }
     }
 
     @Override
     public void interrupt() {
+        WebsocketController.getInstance().deregister(this);
         try {
             socket.close();
         } catch(IOException e) {
-            System.err.println("L");
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void sendFrame(WebsocketFrame f) {
+        try {
+            out.write(f.toBytes());
+        } catch(IOException e) {
+            System.err.println("IOException while sending frame.");
+            e.printStackTrace();
         }
     }
 

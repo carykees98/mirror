@@ -2,14 +2,14 @@ package mirrormap;
 
 import java.io.IOException;
 
-import mirrormap.server.ServerController;
+import mirrormap.server.WebsocketServer;
 
 public class MirrorMapApplication {
 
     public static void main(String[] args){
         try{
-            ServerController serverController = new ServerController(8086);
-            serverController.start();
+            WebsocketServer websocketServer = new WebsocketServer(8086);
+            websocketServer.start();
             //DatabaseHandler maxmind = DatabaseHandler.getInstance();
             //Thread maxmindUpdater = new Thread(new DatabaseUpdater());
             //maxmindUpdater.start();
@@ -23,6 +23,6 @@ public class MirrorMapApplication {
             return;
         }
         
-        System.out.println("end of main function");
+        System.out.println("main() exited.");
     }
 }

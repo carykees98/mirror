@@ -6,12 +6,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
-public class ServerController extends Thread {
+public class WebsocketServer extends Thread {
     private final ServerSocket socket;
 
     private final ExecutorService threadPool;
 
-    public ServerController(int port) throws IOException {
+    public WebsocketServer(int port) throws IOException {
         threadPool = Executors.newCachedThreadPool();
         socket = new ServerSocket(port);
         Runtime.getRuntime().addShutdownHook(new Thread(this::interrupt));
@@ -21,7 +21,7 @@ public class ServerController extends Thread {
     public void run() {
         while(true) {
             try {
-                threadPool.submit(new ServerThread(socket.accept()));
+                threadPool.submit(new WebsocketServerThread(socket.accept()));
             } catch(IOException e) {
                 if(socket.isClosed()) { System.err.println("Socket closed."); }
                 e.printStackTrace();
