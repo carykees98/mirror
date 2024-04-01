@@ -11,5 +11,5 @@ RUN mvn clean package
 FROM eclipse-temurin:17
 EXPOSE 8080
 WORKDIR /mirror
-COPY --from=builder /mirror/target/mirror-map-*.jar ./mirror-map.jar
+COPY --from=builder /mirror/target/mirror-map-0.0.1-jar-with-dependencies.jar ./mirror-map.jar
 ENTRYPOINT [ "java", "-jar", "./mirror-map.jar" ]
