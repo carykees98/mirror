@@ -39,7 +39,11 @@ namespace mirror {
         return s.str();
     }
 
-
+    std::string Event::toMapString() {
+        std::stringstream s;
+        s << project << ":" << bytes_sent << "\n";
+        return s.str();
+    }
 
     /* ----- Private ----- */
 
@@ -90,6 +94,7 @@ namespace mirror {
     std::string Event::parseProject(const std::string &path) {
         std::stringstream s;
         for(uint16_t i = 1; i < path.size() && path.at(i) != '/'; i++) {
+            if(path.at(i) == '.') { return ""; }
             s << path.at(i);
         }
         return s.str();

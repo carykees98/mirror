@@ -102,6 +102,7 @@ services:
     restart: unless-stopped
     expose:
       - 8080
+      - 8081
     volumes:
       - "/var/log/nginx:/mirror/nginx:ro"
       - "./data:/mirror/data"
