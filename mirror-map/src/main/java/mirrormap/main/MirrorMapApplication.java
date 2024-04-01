@@ -16,9 +16,9 @@ public class MirrorMapApplication {
 
     public static void main(String[] args){
         try (ZContext context = new ZContext()) {
-            ZMQ.Socket socket = context.createSocket(SocketType.PUB);
+            ZMQ.Socket socket = context.createSocket(SocketType.SUB);
             socket.connect("tcp://mirror-metrics:8081");
-            socket.send(new byte[]{0x01});
+            socket.subscribe("");
 
             WebsocketServer websocketServer = new WebsocketServer(8080);
             websocketServer.start();
