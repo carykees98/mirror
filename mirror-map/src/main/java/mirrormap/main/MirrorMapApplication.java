@@ -10,6 +10,7 @@ import mirrormap.server.WebsocketServer;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZSocket;
 
 public class MirrorMapApplication {
 
@@ -17,7 +18,7 @@ public class MirrorMapApplication {
         try (ZContext context = new ZContext()) {
             ZMQ.Socket socket = context.createSocket(SocketType.PUB);
             socket.connect("tcp://mirror-metrics:8081");
-            socket.subscribe("");
+            socket.send(new byte[]{0x01});
 
             WebsocketServer websocketServer = new WebsocketServer(8080);
             websocketServer.start();

@@ -1,7 +1,7 @@
 # Build
-FROM ubuntu:latest as builder
+FROM eclipse-temurin:17 as builder
 RUN apt update && apt upgrade -y
-RUN apt install -y openjdk-17-jdk-headless maven libzmq3-dev
+RUN apt install -y maven
 WORKDIR /mirror
 COPY ./src /mirror/src
 COPY ./pom.xml /mirror/pom.xml
