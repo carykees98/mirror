@@ -38,6 +38,24 @@ services:
         limits:
           cpus: "2.0"
           memory: "1024M"
+
+  # --- Map ---
+  map:
+    build: ./mirror-map
+    container_name: mirror-map
+    restart: unless-stopped
+    expose:
+      - 8080
+    networks:
+      - mirror
+    depends_on:
+      - log-server
+      - metrics
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1024M"
   
   # --- Sync scheduler ---
   sync-scheduler:

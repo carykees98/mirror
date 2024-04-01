@@ -1,15 +1,38 @@
 package mirrormap;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
+import mirrormap.io.WebsocketFrame;
+import mirrormap.server.WebsocketController;
 import mirrormap.server.WebsocketServer;
+import org.zeromq.SocketType;
+import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
 
 public class MirrorMapApplication {
 
     public static void main(String[] args){
-        try{
-            WebsocketServer websocketServer = new WebsocketServer(8086);
+        try (ZContext context = new ZContext()) {
+            ZMQ.Socket socket = context.createSocket(SocketType.PUB);
+            socket.connect("tcp://mirror-metrics:8081");
+            socket.subscribe("");
+
+            WebsocketServer websocketServer = new WebsocketServer(8080);
             websocketServer.start();
+
+            WebsocketController websocketController = WebsocketController.getInstance();
+
+            while(true) {
+                websocketController.broadcast(
+                        new WebsocketFrame((byte) 0x1, socket.recv())
+                );
+            }
+
+
+
+
             //DatabaseHandler maxmind = DatabaseHandler.getInstance();
             //Thread maxmindUpdater = new Thread(new DatabaseUpdater());
             //maxmindUpdater.start();
@@ -22,7 +45,5 @@ public class MirrorMapApplication {
             e.printStackTrace();
             return;
         }
-        
-        System.out.println("main() exited.");
     }
 }
