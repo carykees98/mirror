@@ -1,7 +1,7 @@
 # Build
 FROM eclipse-temurin:17 as builder
 RUN apt update && apt upgrade -y
-RUN apt install -y maven
+RUN apt install -y maven libzmq3-dev
 WORKDIR /mirror
 COPY ./src /mirror/src
 COPY ./pom.xml /mirror/pom.xml
