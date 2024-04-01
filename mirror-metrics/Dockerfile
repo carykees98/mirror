@@ -1,7 +1,6 @@
 # Build
 FROM ubuntu:latest as builder
-RUN apt update && apt upgrade -y
-RUN apt install -y g++ cmake ninja-build git libzmq3-dev libcurl4-openssl-dev zlib1g-dev
+RUN apt update && apt upgrade -y && apt install -y g++ cmake ninja-build git libzmq3-dev libcurl4-openssl-dev zlib1g-dev
 WORKDIR /mirror
 COPY ./src /mirror/src
 COPY ./lib /mirror/lib
