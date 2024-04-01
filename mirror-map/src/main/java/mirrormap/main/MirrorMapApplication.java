@@ -1,4 +1,4 @@
-package mirrormap;
+package mirrormap.main;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
