@@ -1,4 +1,4 @@
-package mirrormap.maxmind;
+package mirrormap.geoip;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,7 +19,7 @@ import org.codehaus.plexus.util.FileUtils;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
-public class DatabaseUpdater implements Runnable{
+public class GeoIPUpdater implements Runnable{
 
     private static final String DATABASE_URL = "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&suffix=tar.gz&license_key=";
     private static final String CHECKSUM_URL = "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&suffix=tar.gz.sha256&license_key=";
@@ -35,7 +35,7 @@ public class DatabaseUpdater implements Runnable{
     //used to update the database every 24 hours in a thread
     public void run(){
         //get a pointer to the maxmind handler object
-        DatabaseHandler maxmind = DatabaseHandler.getInstance();
+        GeoIPDatabase maxmind = GeoIPDatabase.getInstance();
         while(true){
             //download the database
             downloadDatabase();

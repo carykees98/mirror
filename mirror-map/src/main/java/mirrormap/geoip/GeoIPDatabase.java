@@ -1,4 +1,4 @@
-package mirrormap.maxmind;
+package mirrormap.geoip;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 
-public class DatabaseHandler {
+public class GeoIPDatabase {
 
     private static final String DATABASE_DESTINATION_DIR = "GeoLite2City";
 
@@ -16,15 +16,15 @@ public class DatabaseHandler {
     private static DatabaseReader reader = null;
 
     //used to make this class a singleton class
-    private static DatabaseHandler dbh_instance = null;
+    private static GeoIPDatabase dbh_instance = null;
 
     //private default constructor for singleton
-    private DatabaseHandler(){}
+    private GeoIPDatabase(){}
 
     //get instance function for accessing the singleton class
-    public static synchronized DatabaseHandler getInstance(){
+    public static synchronized GeoIPDatabase getInstance(){
         if(dbh_instance == null){
-            dbh_instance = new DatabaseHandler();
+            dbh_instance = new GeoIPDatabase();
         }
         return dbh_instance;
     }
