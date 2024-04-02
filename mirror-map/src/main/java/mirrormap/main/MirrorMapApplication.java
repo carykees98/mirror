@@ -57,7 +57,7 @@ public class MirrorMapApplication {
                         System.out.println(latlong[0] + " " + latlong[1]);
                         sb.append(projectIp[0]).append('\n');
                         sb.append(latlong[0]).append('\n');
-                        sb.append(latlong[1]).append('\n');
+                        sb.append(latlong[1]);
                         byte[] data = sb.toString().getBytes(StandardCharsets.UTF_8);
                         websocketController.broadcast(
                                 new WebsocketFrame((byte) 0x1, data)
