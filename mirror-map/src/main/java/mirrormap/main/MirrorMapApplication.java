@@ -1,5 +1,6 @@
 package mirrormap.main;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -42,10 +43,15 @@ public class MirrorMapApplication {
                 String[] projectIp = msg.split(":", 2);
                 if(projectIp.length == 2) {
                     try {
+                        StringBuilder sb = new StringBuilder();
                         double[] latlong = geoIP.getLatLong(projectIp[1]);
                         System.out.println(latlong[0] + " " + latlong[1]);
+                        sb.append(projectIp[0]).append('\n');
+                        sb.append(latlong[0]).append('\n');
+                        sb.append(latlong[1]).append('\n');
+                        byte[] data = sb.toString().getBytes(StandardCharsets.UTF_8);
                         websocketController.broadcast(
-                                new WebsocketFrame((byte) 0x1, new byte[]{'t'})
+                                new WebsocketFrame((byte) 0x1, data)
                         );
                     } catch (GeoIp2Exception ignored) {
                         System.err.println("GeoIp2Exception");
