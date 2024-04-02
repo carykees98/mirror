@@ -7,51 +7,54 @@ import java.net.InetAddress;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
+import mirrormap.log.Log;
 
 public class GeoIPDatabase {
 
     private static final String DATABASE_DESTINATION_DIR = "GeoLite2City";
 
+    private final Log log;
+
     //used to read data from the maxmind database
     private static DatabaseReader reader = null;
 
     //used to make this class a singleton class
-    private static GeoIPDatabase dbh_instance = null;
+    private static GeoIPDatabase instance = null;
 
     //private default constructor for singleton
-    private GeoIPDatabase(){}
+    private GeoIPDatabase() {
+        log = Log.getInstance();
+    }
 
     //get instance function for accessing the singleton class
     public static synchronized GeoIPDatabase getInstance(){
-        if(dbh_instance == null){
-            dbh_instance = new GeoIPDatabase();
-        }
-        return dbh_instance;
+        if(instance == null){ instance = new GeoIPDatabase(); }
+        return instance;
     }
 
     //initialize the maxmind database handler based on its file location
-    public void ConfigureHandler(){
+    public void configure(){
+        log.info("Configuring GeoIP database...");
         try{
             File geoLite2Directory = new File(DATABASE_DESTINATION_DIR + "/" + new File(DATABASE_DESTINATION_DIR).list()[0] + "/GeoLite2-City.mmdb");
             reader = new DatabaseReader.Builder(geoLite2Directory).build();
         }
         catch(IOException e){
+            log.error("Failed to configure GeoIP database.");
             e.printStackTrace();
         }
+        log.info("Configured GeoIP database.");
     }
 
     //used to get the latitude and longitude based on the ip using the maxmind database reader
     public double[] getLatLong(String ipAddress) throws IOException, GeoIp2Exception{
-        if(reader == null){
-            throw new GeoIp2Exception("Database Reader Not Configured.");
+        if(reader == null) {
+            throw new GeoIp2Exception("GeoIP database not configured.");
         }
         InetAddress ip = InetAddress.getByName(ipAddress);
         CityResponse response = reader.city(ip);
- 
-        double[] longlat = new double[2];
-        longlat[0] = response.getLocation().getLatitude();
-        longlat[1] = response.getLocation().getLongitude();
-        return longlat;
+
+        return new double[]{response.getLocation().getLatitude(), response.getLocation().getLongitude()};
     }
 
 }
