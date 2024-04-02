@@ -47,6 +47,7 @@ services:
     expose:
       - 8080
     volumes:
+      - "./configs:/mirror/configs:ro"
       - "./GeoLite2-City:/mirror/GeoLite2-City"
     networks:
       - mirror
