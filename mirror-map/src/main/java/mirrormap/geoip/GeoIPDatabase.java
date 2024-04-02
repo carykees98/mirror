@@ -47,13 +47,12 @@ public class GeoIPDatabase {
     }
 
     //used to get the latitude and longitude based on the ip using the maxmind database reader
-    public double[] getLatLong(String ipAddress) throws IOException, GeoIp2Exception{
+    public double[] getLatLong(String ipAddress) throws IOException, GeoIp2Exception {
         if(reader == null) {
             throw new GeoIp2Exception("GeoIP database not configured.");
         }
         InetAddress ip = InetAddress.getByName(ipAddress);
         CityResponse response = reader.city(ip);
-
         return new double[]{response.getLocation().getLatitude(), response.getLocation().getLongitude()};
     }
 

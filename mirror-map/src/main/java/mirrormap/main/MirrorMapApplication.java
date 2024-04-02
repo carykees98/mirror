@@ -2,6 +2,7 @@ package mirrormap.main;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
@@ -62,7 +63,10 @@ public class MirrorMapApplication {
                                 new WebsocketFrame((byte) 0x1, data)
                         );
                     } catch (GeoIp2Exception ignored) {
+                        log.error("Could not get location for IP " + projectIp[1] + " (GeoIp2Exception)");
                         System.err.println("GeoIp2Exception");
+                    } catch (UnknownHostException e) {
+                        log.error("Could not get location for IP " + projectIp[1] + " (UnknownHostException)");
                     }
                 }
             }
