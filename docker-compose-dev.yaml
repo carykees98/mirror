@@ -84,6 +84,8 @@ services:
       - 8080
     networks:
       - mirror
+    volumes:
+      - "./mirror-map/GeoLite2-City:/mirror/GeoLite2-City"
     depends_on:
       - log-server
       - metrics
