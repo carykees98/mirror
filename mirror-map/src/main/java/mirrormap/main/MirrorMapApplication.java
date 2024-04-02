@@ -2,18 +2,16 @@ package mirrormap.main;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import mirrormap.geoip.GeoIPDatabase;
 import mirrormap.geoip.GeoIPUpdater;
 import mirrormap.io.WebsocketFrame;
-import mirrormap.server.WebsocketController;
-import mirrormap.server.WebsocketServer;
+import mirrormap.websocket.WebsocketController;
+import mirrormap.websocket.WebsocketServer;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
-import org.zeromq.ZSocket;
 
 public class MirrorMapApplication {
 
