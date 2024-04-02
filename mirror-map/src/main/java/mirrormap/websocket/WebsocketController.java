@@ -1,4 +1,4 @@
-package mirrormap.server;
+package mirrormap.websocket;
 
 import mirrormap.io.WebsocketFrame;
 

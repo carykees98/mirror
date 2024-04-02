@@ -1,4 +1,4 @@
-package mirrormap.server;
+package mirrormap.websocket;
 
 import java.io.IOException;
 import java.net.ServerSocket;
