@@ -86,7 +86,7 @@ services:
       - mirror
     volumes:
       - "./mirror-map/configs:/mirror/configs:ro"
-      - "./mirror-map/GeoLite2-City:/mirror/GeoLite2-City"
+      - "./mirror-map/GeoLite2City:/mirror/GeoLite2City"
     depends_on:
       - log-server
       - metrics

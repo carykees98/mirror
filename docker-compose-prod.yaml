@@ -48,7 +48,7 @@ services:
       - "30302:8080"
     volumes:
       - "./configs:/mirror/configs:ro"
-      - "./GeoLite2-City:/mirror/GeoLite2-City"
+      - "./GeoLite2City:/mirror/GeoLite2City"
     networks:
       - mirror
     depends_on:
