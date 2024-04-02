@@ -54,7 +54,6 @@ public class MirrorMapApplication {
                     try {
                         StringBuilder sb = new StringBuilder();
                         double[] latlong = geoIP.getLatLong(projectIp[1]);
-                        System.out.println(latlong[0] + " " + latlong[1]);
                         sb.append(projectIp[0]).append('\n');
                         sb.append(latlong[0]).append('\n');
                         sb.append(latlong[1]);
