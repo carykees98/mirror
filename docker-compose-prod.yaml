@@ -44,8 +44,8 @@ services:
     build: ./mirror-map
     container_name: mirror-map
     restart: unless-stopped
-    expose:
-      - 8080
+    ports:
+      - "30302:8080"
     volumes:
       - "./configs:/mirror/configs:ro"
       - "./GeoLite2-City:/mirror/GeoLite2-City"
