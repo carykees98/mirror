@@ -54,11 +54,7 @@ public class WebsocketServerThread extends Thread {
 
             log.info("Opened new websocket connection.");
 
-            while(true) {
-                int b = in.read();
-                if(b == -1) { break; }
-                out.write(b);
-            }
+            while(in.read() != -1);
 
             WebsocketController.getInstance().deregister(this);
 
