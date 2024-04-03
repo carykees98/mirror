@@ -56,7 +56,7 @@ public class GeoIPUpdater implements Runnable {
             //downloadDatabase();
             //configure the database handler for the database file
             maxmind.configure();
-            log.info("Updated GeoIP database.");
+            log.info("Done updating GeoIP database.");
 
             try{
                 //TODO: Change to sleep till 1am (or midnight)
@@ -116,6 +116,7 @@ public class GeoIPUpdater implements Runnable {
             ua.setSourceFile(new File(DATABASE_FILENAME));
             ua.setDestDirectory(destDir);
             ua.extract();
+            log.info("Done extracting GeoIP database.");
         }
         catch(IOException | GeneralSecurityException e){
             log.error("Failed to update GeoIP database.");

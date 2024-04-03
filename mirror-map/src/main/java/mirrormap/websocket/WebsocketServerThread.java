@@ -32,7 +32,7 @@ public class WebsocketServerThread extends Thread {
     @Override
     public void run() {
         try {
-            log.info("Starting session for " + socket.getInetAddress().toString());
+            log.info("Opening new websocket connection...");
 
             // Get socket i/o handles
             in = socket.getInputStream();
@@ -51,6 +51,8 @@ public class WebsocketServerThread extends Thread {
 
             // Register this session with WebsocketController once the handshake has completed
             WebsocketController.getInstance().register(this);
+
+            log.info("Opened new websocket connection.");
 
         } catch(ParseException e) {
             WebsocketController.getInstance().deregister(this);

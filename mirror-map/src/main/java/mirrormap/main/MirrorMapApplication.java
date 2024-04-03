@@ -63,8 +63,7 @@ public class MirrorMapApplication {
                         );
                     } catch (GeoIp2Exception ignored) {
                         log.error("Could not get location for IP " + projectIp[1] + " (GeoIp2Exception)");
-                        System.err.println("GeoIp2Exception");
-                    } catch (UnknownHostException e) {
+                    } catch (UnknownHostException ignored) {
                         log.error("Could not get location for IP " + projectIp[1] + " (UnknownHostException)");
                     }
                 }

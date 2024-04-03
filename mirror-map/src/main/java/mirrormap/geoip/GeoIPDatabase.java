@@ -43,13 +43,13 @@ public class GeoIPDatabase {
             log.error("Failed to configure GeoIP database.");
             e.printStackTrace();
         }
-        log.info("Configured GeoIP database.");
+        log.info("Done configuring GeoIP database.");
     }
 
     //used to get the latitude and longitude based on the ip using the maxmind database reader
     public double[] getLatLong(String ipAddress) throws IOException, GeoIp2Exception {
         if(reader == null) {
-            throw new GeoIp2Exception("GeoIP database not configured.");
+            throw new GeoIp2Exception("Unable to get location - GeoIP database not configured.");
         }
         InetAddress ip = InetAddress.getByName(ipAddress);
         CityResponse response = reader.city(ip);
