@@ -35,13 +35,12 @@ public class LogEvent {
      * @param component_name The component name to be logged
      * @param severity The severity of the event
      * @param message The message to be logged
-     * @param application_config ApplicationConfig to use
      */
-    public LogEvent(String component_name, int severity, String message, ApplicationConfig application_config) {
+    public LogEvent(String component_name, int severity, String message) {
         this.component_name = component_name;
         this.severity = severity;
         this.message = message;
-        this.COMPONENT_PAD = application_config.getComponentPad();
+        this.COMPONENT_PAD = ApplicationConfig.getInstance().getComponentPad();
     }
 
     /**

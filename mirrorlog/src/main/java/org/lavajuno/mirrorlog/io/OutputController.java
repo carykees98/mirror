@@ -12,19 +12,16 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class OutputController extends Thread {
     private final BlockingQueue<LogEvent> output_queue;
-    private final ApplicationConfig application_config;
     private LogFile logFile;
     private final boolean LOG_TO_FILE;
 
     /**
-     * Instantiates an OutputController.
-     * @param application_config ApplicationConfig to use
+     * Constructs an OutputController.
      */
-    public OutputController(ApplicationConfig application_config) throws IOException {
-        this.application_config = application_config;
-        this.output_queue = new LinkedBlockingQueue<>();
-        this.LOG_TO_FILE = application_config.getLogToFile();
-        if(LOG_TO_FILE) { logFile = new LogFile(application_config); }
+    public OutputController() throws IOException {
+        output_queue = new LinkedBlockingQueue<>();
+        LOG_TO_FILE = ApplicationConfig.getInstance().getLogToFile();
+        if(LOG_TO_FILE) { logFile = new LogFile(); }
     }
 
     /**
@@ -34,7 +31,7 @@ public class OutputController extends Thread {
      * @param message Message to be logged
      */
     public void submitEvent(String component_name, int severity, String message) {
-        output_queue.add(new LogEvent(component_name, severity, message, application_config));
+        output_queue.add(new LogEvent(component_name, severity, message));
     }
 
     /**
@@ -47,7 +44,6 @@ public class OutputController extends Thread {
             while(true) {
                 event = output_queue.take();
                 write(event);
-
             }
         } catch(InterruptedException e) {
             System.out.println("Flushing output queue...");
@@ -66,7 +62,7 @@ public class OutputController extends Thread {
             if(logFile.isExpired()) {
                 logFile.close();
                 try {
-                    logFile = new LogFile(application_config);
+                    logFile = new LogFile();
                 } catch(IOException e) {
                     System.err.println("Failed to create new log file!");
                 }

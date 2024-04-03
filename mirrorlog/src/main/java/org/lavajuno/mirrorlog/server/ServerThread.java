@@ -16,21 +16,20 @@ import org.lavajuno.mirrorlog.io.OutputController;
  */
 public class ServerThread extends Thread {
     private final Socket socket;
-    private final InetAddress client_address;
     private final OutputController outputController;
     private final ApplicationConfig application_config;
+    private final String client_address;
 
     /**
      * Instantiates a ServerThread.
      * @param socket Socket to communicate with client over
      * @param outputController OutputController to queue events in
-     * @param application_config ApplicationConfig to use
      */
-    public ServerThread(Socket socket, OutputController outputController, ApplicationConfig application_config) {
+    public ServerThread(Socket socket, OutputController outputController) {
         this.socket = socket;
+        client_address = socket.getInetAddress().toString().split("/", 2)[1];
         this.outputController = outputController;
-        this.client_address = socket.getInetAddress();
-        this.application_config = application_config;
+        this.application_config = ApplicationConfig.getInstance();
         Runtime.getRuntime().addShutdownHook(new Thread(this::interrupt));
     }
 
@@ -93,10 +92,10 @@ public class ServerThread extends Thread {
     @Override
     public void interrupt() {
         try {
-            System.out.println("Connection to " + socket.getInetAddress() + " terminated. (Shutdown)");
+            System.out.println("Connection to " + client_address + " terminated. (Shutdown)");
             this.socket.close();
         } catch(IOException e) {
-            System.err.println("Failed to close connection to " + socket.getInetAddress());
+            System.err.println("Failed to close connection to " + client_address);
         }
     }
 }

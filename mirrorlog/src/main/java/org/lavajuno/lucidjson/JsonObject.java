@@ -2,16 +2,15 @@ package org.lavajuno.lucidjson;
 
 import org.lavajuno.lucidjson.util.Index;
 import org.lavajuno.lucidjson.util.Pair;
+import org.lavajuno.lucidjson.error.JsonParseException;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.text.ParseException;
-import java.util.*;
+import java.util.TreeMap;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Represents a JSON object.
  * Provides functionality for accessing and modifying its values.
- * LucidJSON v0.0.1 (Experimental)
  */
 @SuppressWarnings("unused")
 public class JsonObject extends JsonEntity {
@@ -32,9 +31,9 @@ public class JsonObject extends JsonEntity {
      * Constructs a JsonObject by parsing the input.
      * @param text JSON to parse
      * @param i Index of next character to parse
-     * @throws ParseException If an error is encountered while parsing the input
+     * @throws JsonParseException If an error is encountered while parsing the input
      */
-    protected JsonObject(String text, Index i) throws ParseException {
+    protected JsonObject(String text, Index i) throws JsonParseException {
         values = parseValues(text, i);
     }
 
@@ -42,57 +41,29 @@ public class JsonObject extends JsonEntity {
      * Deserializes a JSON object from a String.
      * @param text Input string
      * @return Deserialized JSON object
-     * @throws ParseException if parsing fails;
+     * @throws JsonParseException if parsing fails;
      */
-    public static JsonObject from(String text) throws ParseException {
-        String line = text.replace("\n", "");
+    public static JsonObject from(String text) throws JsonParseException {
         Index i = new Index(0);
-        return new JsonObject(line, i);
-    }
-
-    /**
-     * Deserializes a JSON object from a list of lines (Strings).
-     * @param lines Input lines
-     * @return Deserialized JSON object
-     * @throws ParseException If parsing fails
-     */
-    public static JsonObject from(List<String> lines) throws ParseException {
-        StringBuilder sb = new StringBuilder();
-        for(String i : lines) { sb.append(i); }
-        return from(sb.toString());
-    }
-
-    /**
-     * Deserializes a JSON object from a file.
-     * @param file_path Path to the input file
-     * @return Deserialized JSON object
-     * @throws FileNotFoundException If the file could not be read
-     * @throws ParseException If parsing fails
-     */
-    public static JsonObject fromFile(String file_path) throws FileNotFoundException, ParseException {
-        Scanner file = new Scanner(new FileInputStream(file_path));
-        StringBuilder lines = new StringBuilder();
-        while(file.hasNextLine()) { lines.append(file.nextLine()); }
-        file.close();
-        return from(lines.toString());
+        return new JsonObject(text, i);
     }
 
     /**
      * @param text JSON to parse
      * @param i Index of next character to parse
      * @return Key-value map created from the input
-     * @throws ParseException If an error is encountered while parsing the input
+     * @throws JsonParseException If an error is encountered while parsing the input
      */
-    private static TreeMap<String, JsonEntity> parseValues(String text, Index i) throws ParseException {
+    private static TreeMap<String, JsonEntity> parseValues(String text, Index i) throws JsonParseException {
         TreeMap<String, JsonEntity> values = new TreeMap<>();
         skipSpace(text, i);
         if(text.charAt(i.pos) != '{') {
-            throwParseError(text, i.pos, "Parsing object, expected a '{'.");
+            throw new JsonParseException(text, i.pos, "Parsing object, expected a '{'.");
         }
         i.pos++;
         if(i.pos >= text.length()) {
             // Handle end of input after opening {
-            throwParseError(text, i.pos, "Parsing object, reached end of input.");
+            throw new JsonParseException(text, i.pos, "Parsing object, reached end of input.");
         }
         if(text.charAt(i.pos) == '}') {
             // Handle empty objects
@@ -112,7 +83,7 @@ public class JsonObject extends JsonEntity {
             }
             if(text.charAt(i.pos) != ',') {
                 // Not the last item, but no comma
-                throwParseError(text , i.pos, "Parsing object, expected a ','.");
+                throw new JsonParseException(text , i.pos, "Parsing object, expected a ','.");
             }
             i.pos++;
         }
@@ -150,13 +121,13 @@ public class JsonObject extends JsonEntity {
      * Gets a collection of all the keys in this JsonObject
      * @return This JsonObject's keys
      */
-    public Collection<String> getKeys() { return values.keySet(); }
+    public Collection<String> keys() { return values.keySet(); }
 
     /**
      * Gets a collection of all the values in this JsonObject
      * @return This JsonObject's values
      */
-    public Collection<JsonEntity> getValues() { return values.values(); }
+    public Collection<JsonEntity> values() { return values.values(); }
 
     /**
      * Gets ths size of this JsonObject
@@ -165,7 +136,7 @@ public class JsonObject extends JsonEntity {
     public int size() { return values.size(); }
 
     @Override
-    protected String toString(int indent) {
+    protected String toJsonString(int indent) {
         StringBuilder sb = new StringBuilder();
         String pad_elem = " ".repeat(indent + 4);
         String pad_close = " ".repeat(indent);
@@ -175,7 +146,7 @@ public class JsonObject extends JsonEntity {
         for(String j : keys) {
             i++;
             sb.append(pad_elem).append("\"").append(j).append("\": ");
-            sb.append(values.get(j).toString(indent + 4));
+            sb.append(values.get(j).toJsonString(indent + 4));
             if(i < keys.size()) { sb.append(","); }
             sb.append("\n");
         }
@@ -184,14 +155,14 @@ public class JsonObject extends JsonEntity {
     }
 
     @Override
-    public String toString() {
+    public String toJsonString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         Set<String> keys = values.keySet();
         int i = 0;
         for(String j : keys) {
             i++;
-            sb.append("\"").append(j).append("\":").append(values.get(j));
+            sb.append("\"").append(j).append("\":").append(values.get(j).toJsonString());
             if(i < keys.size()) { sb.append(","); }
         }
         sb.append("}");

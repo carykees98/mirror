@@ -26,10 +26,6 @@ public class ServerController extends Thread {
      */
     private final ExecutorService threadPool;
 
-    /**
-     * This ServerController's application configuration
-     */
-    final ApplicationConfig application_config;
 
     /**
      * This ServerController's OutputController
@@ -41,10 +37,9 @@ public class ServerController extends Thread {
      * @throws IOException if the socket cannot be created
      */
     public ServerController() throws IOException, ParseException {
-        application_config = new ApplicationConfig(LogMap.CONFIG_FILE_PATH);
-        output_controller = new OutputController(application_config);
-        threadPool = Executors.newFixedThreadPool(application_config.getThreads());
-        socket = new ServerSocket(application_config.getPort());
+        output_controller = new OutputController();
+        threadPool = Executors.newFixedThreadPool(ApplicationConfig.getInstance().getThreads());
+        socket = new ServerSocket(ApplicationConfig.getInstance().getPort());
         Runtime.getRuntime().addShutdownHook(new Thread(this::interrupt));
     }
 
@@ -58,7 +53,7 @@ public class ServerController extends Thread {
         );
         while(true) {
             try {
-                threadPool.submit(new ServerThread(socket.accept(), output_controller, application_config));
+                threadPool.submit(new ServerThread(socket.accept(), output_controller));
             } catch(IOException e) {
                 if (socket.isClosed()) { return; }
                 System.err.println("Failed to accept a connection. (IOException)");
