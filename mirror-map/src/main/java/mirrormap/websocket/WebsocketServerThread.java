@@ -54,6 +54,20 @@ public class WebsocketServerThread extends Thread {
 
             log.info("Opened new websocket connection.");
 
+            while(true) {
+                int b = in.read();
+                if(b == -1) { break; }
+                out.write(b);
+            }
+
+            WebsocketController.getInstance().deregister(this);
+
+            log.info("Closing websocket connection...");
+
+            socket.close();
+
+            log.info("Closed websocket connection.");
+
         } catch(ParseException e) {
             WebsocketController.getInstance().deregister(this);
             log.error("ParseException on HTTP request from " + socket.getInetAddress().toString());
