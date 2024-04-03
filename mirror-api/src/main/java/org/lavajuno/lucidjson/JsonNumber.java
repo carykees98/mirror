@@ -1,8 +1,7 @@
 package org.lavajuno.lucidjson;
 
 import org.lavajuno.lucidjson.util.Index;
-
-import java.text.ParseException;
+import org.lavajuno.lucidjson.error.JsonParseException;
 
 /**
  * Represents a JSON number value.
@@ -41,7 +40,7 @@ public class JsonNumber extends JsonEntity {
      * @param text JSON number
      * @param i Index of next character to parse
      */
-    protected JsonNumber(String text, Index i) throws ParseException {
+    protected JsonNumber(String text, Index i) throws JsonParseException {
         int begin = i.pos;
         while(i.pos < text.length()) {
             if(!isNumber(text.charAt(i.pos))) {
@@ -50,7 +49,7 @@ public class JsonNumber extends JsonEntity {
             i.pos++;
         }
         if(i.pos == text.length()) {
-            throwParseError(text, i.pos, "Parsing number, reached end of input.");
+            throw new JsonParseException(text, i.pos, "Parsing number, reached end of input.");
         }
         this.value = text.substring(begin, i.pos);
     }

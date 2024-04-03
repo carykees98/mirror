@@ -1,6 +1,6 @@
 package org.lavajuno.lucidjson;
 
-import java.text.ParseException;
+import org.lavajuno.lucidjson.error.JsonParseException;
 
 /**
  * Classes can implement JsonSerializable to enable them
@@ -41,9 +41,9 @@ public interface JsonSerializable {
     /**
      * Deserializes a JSON string into this instance.
      * @param s JSON string to deserialize
-     * @throws ParseException If an error is encountered while parsing the input
+     * @throws JsonParseException If an error is encountered while parsing the input
      */
-    default void fromJsonString(String s) throws ParseException {
+    default void fromJsonString(String s) throws JsonParseException {
         this.fromJsonObject(JsonObject.from(s));
     }
 }

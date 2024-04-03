@@ -1,8 +1,7 @@
 package org.lavajuno.lucidjson;
 
 import org.lavajuno.lucidjson.util.Index;
-
-import java.text.ParseException;
+import org.lavajuno.lucidjson.error.JsonParseException;
 
 /**
  * Represents a JSON literal value (true/false/null).
@@ -28,7 +27,7 @@ public class JsonLiteral extends JsonEntity {
      * @param i Index of next character to parse
      * @param text JSON to parse
      */
-    protected JsonLiteral(String text, Index i) throws ParseException {
+    protected JsonLiteral(String text, Index i) throws JsonParseException {
         if(text.startsWith("true", i.pos)) {
             i.pos += 4;
             value = true;
@@ -39,7 +38,7 @@ public class JsonLiteral extends JsonEntity {
             i.pos += 4;
             value = null;
         } else {
-            throwParseError(text, i.pos, "Parsing literal, unknown value");
+            throw new JsonParseException(text, i.pos, "Parsing literal, unknown value");
         }
     }
 

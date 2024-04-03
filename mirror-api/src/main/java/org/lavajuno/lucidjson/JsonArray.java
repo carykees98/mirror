@@ -1,8 +1,8 @@
 package org.lavajuno.lucidjson;
 
 import org.lavajuno.lucidjson.util.Index;
+import org.lavajuno.lucidjson.error.JsonParseException;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 
 /**
@@ -28,9 +28,9 @@ public class JsonArray extends JsonEntity {
      * Constructs a JsonArray by parsing the input.
      * @param text JSON to parse
      * @param i Index of next character to parse
-     * @throws ParseException If an error is encountered while parsing the input
+     * @throws JsonParseException If an error is encountered while parsing the input
      */
-    protected JsonArray(String text, Index i) throws ParseException {
+    protected JsonArray(String text, Index i) throws JsonParseException {
         values = parseValues(text, i);
     }
 
@@ -38,9 +38,9 @@ public class JsonArray extends JsonEntity {
      * Deserializes a JSON array from a String.
      * @param text Input string
      * @return Deserialized JSON array
-     * @throws ParseException if parsing fails;
+     * @throws JsonParseException if parsing fails;
      */
-    public static JsonArray from(String text) throws ParseException {
+    public static JsonArray from(String text) throws JsonParseException {
         Index i = new Index(0);
         return new JsonArray(text, i);
     }
@@ -49,18 +49,18 @@ public class JsonArray extends JsonEntity {
      * @param text JSON to parse
      * @param i Index of next character to parse
      * @return Vector created from the input
-     * @throws ParseException If an error is encountered while parsing the input
+     * @throws JsonParseException If an error is encountered while parsing the input
      */
-    private static ArrayList<JsonEntity> parseValues(String text, Index i) throws ParseException {
+    private static ArrayList<JsonEntity> parseValues(String text, Index i) throws JsonParseException {
         ArrayList<JsonEntity> values = new ArrayList<>();
         skipSpace(text, i);
         if(text.charAt(i.pos) != '[') {
-            throwParseError(text, i.pos, "Parsing array, expected a '['.");
+            throw new JsonParseException(text, i.pos, "Parsing array, expected a '['.");
         }
         i.pos++;
         if(i.pos >= text.length()) {
             // Handle end of input after opening {
-            throwParseError(text, i.pos, "Parsing array, reached end of input.");
+            throw new JsonParseException(text, i.pos, "Parsing array, reached end of input.");
         }
         if(text.charAt(i.pos) == ']') {
             // Handle empty arrays
@@ -77,7 +77,7 @@ public class JsonArray extends JsonEntity {
                 break;
             }
             if(text.charAt(i.pos) != ',') {
-                throwParseError(text , i.pos, "Parsing array, expected a ','.");
+                throw new JsonParseException(text , i.pos, "Parsing array, expected a ','.");
             }
             i.pos++;
         }
@@ -87,21 +87,21 @@ public class JsonArray extends JsonEntity {
 
     /**
      * @param index Index of the target JsonEntity
-     * @return JsonEntity at the given index (null if it does not exist)
+     * @return JsonEntity at the given index
+     * @throws IndexOutOfBoundsException If the index is larger than the size of the array
      */
-    public JsonEntity get(int index) {
-        try {
-            return values.get(index);
-        } catch(ArrayIndexOutOfBoundsException e) {
-            return null;
-        }
+    public JsonEntity get(int index) throws IndexOutOfBoundsException {
+        return values.get(index);
     }
 
     /**
      * @param index Index of the target JsonEntity
      * @param value New value for the target JsonEntity
+     * @throws IndexOutOfBoundsException If the index is larger than the size of the array
      */
-    public void set(int index, JsonEntity value) { values.set(index, value); }
+    public void set(int index, JsonEntity value) throws IndexOutOfBoundsException {
+        values.set(index, value);
+    }
 
     /**
      * @param value JsonEntity to be added to this JsonArray
@@ -110,8 +110,11 @@ public class JsonArray extends JsonEntity {
 
     /**
      * @param index Index of the JsonEntity to remove
+     * @throws IndexOutOfBoundsException If the index is larger than the size of the array
      */
-    public void remove(int index) { values.remove(index); }
+    public void remove(int index) throws IndexOutOfBoundsException {
+        values.remove(index);
+    }
 
     /**
      * Clears this JsonArray

@@ -4,6 +4,7 @@ import edu.clarkson.cosi.mirrorapi.error.NotFoundException;
 import edu.clarkson.cosi.mirrorapi.io.Log;
 import edu.clarkson.cosi.mirrorapi.state.Mirrors;
 import org.lavajuno.lucidjson.JsonObject;
+import org.lavajuno.lucidjson.error.JsonParseException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.ParseException;
 
 /**
  * Defines available API mappings and their behavior,
@@ -29,9 +29,9 @@ public class MirrorAPIController {
     /**
      * Constructs a MirrorAPIController.
      * @throws IOException If reading mirrors.json fails
-     * @throws ParseException If parsing mirrors.json fails
+     * @throws JsonParseException If parsing mirrors.json fails
      */
-    public MirrorAPIController() throws IOException, ParseException {
+    public MirrorAPIController() throws IOException, JsonParseException {
         log = Log.getInstance();
         log.configure(LOG_HOST, LOG_PORT, "API");
         log.info("Reading mirrors...");

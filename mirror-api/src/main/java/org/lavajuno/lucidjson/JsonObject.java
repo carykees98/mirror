@@ -2,8 +2,8 @@ package org.lavajuno.lucidjson;
 
 import org.lavajuno.lucidjson.util.Index;
 import org.lavajuno.lucidjson.util.Pair;
+import org.lavajuno.lucidjson.error.JsonParseException;
 
-import java.text.ParseException;
 import java.util.TreeMap;
 import java.util.Collection;
 import java.util.Set;
@@ -31,9 +31,9 @@ public class JsonObject extends JsonEntity {
      * Constructs a JsonObject by parsing the input.
      * @param text JSON to parse
      * @param i Index of next character to parse
-     * @throws ParseException If an error is encountered while parsing the input
+     * @throws JsonParseException If an error is encountered while parsing the input
      */
-    protected JsonObject(String text, Index i) throws ParseException {
+    protected JsonObject(String text, Index i) throws JsonParseException {
         values = parseValues(text, i);
     }
 
@@ -41,9 +41,9 @@ public class JsonObject extends JsonEntity {
      * Deserializes a JSON object from a String.
      * @param text Input string
      * @return Deserialized JSON object
-     * @throws ParseException if parsing fails;
+     * @throws JsonParseException if parsing fails;
      */
-    public static JsonObject from(String text) throws ParseException {
+    public static JsonObject from(String text) throws JsonParseException {
         Index i = new Index(0);
         return new JsonObject(text, i);
     }
@@ -52,18 +52,18 @@ public class JsonObject extends JsonEntity {
      * @param text JSON to parse
      * @param i Index of next character to parse
      * @return Key-value map created from the input
-     * @throws ParseException If an error is encountered while parsing the input
+     * @throws JsonParseException If an error is encountered while parsing the input
      */
-    private static TreeMap<String, JsonEntity> parseValues(String text, Index i) throws ParseException {
+    private static TreeMap<String, JsonEntity> parseValues(String text, Index i) throws JsonParseException {
         TreeMap<String, JsonEntity> values = new TreeMap<>();
         skipSpace(text, i);
         if(text.charAt(i.pos) != '{') {
-            throwParseError(text, i.pos, "Parsing object, expected a '{'.");
+            throw new JsonParseException(text, i.pos, "Parsing object, expected a '{'.");
         }
         i.pos++;
         if(i.pos >= text.length()) {
             // Handle end of input after opening {
-            throwParseError(text, i.pos, "Parsing object, reached end of input.");
+            throw new JsonParseException(text, i.pos, "Parsing object, reached end of input.");
         }
         if(text.charAt(i.pos) == '}') {
             // Handle empty objects
@@ -83,7 +83,7 @@ public class JsonObject extends JsonEntity {
             }
             if(text.charAt(i.pos) != ',') {
                 // Not the last item, but no comma
-                throwParseError(text , i.pos, "Parsing object, expected a ','.");
+                throw new JsonParseException(text , i.pos, "Parsing object, expected a ','.");
             }
             i.pos++;
         }

@@ -1,6 +1,6 @@
 package org.lavajuno.lucidjson.util;
 
-import java.text.ParseException;
+import org.lavajuno.lucidjson.error.JsonParseException;
 
 /**
  * StringUtils provides helper functions for working with strings
@@ -51,9 +51,9 @@ public class StringUtils {
      * Currently does not support unicode escapes (uXXXX)
      * @param s String that may contain escape sequences
      * @return Unescaped strings
-     * @throws ParseException If an invalid escape sequence is found
+     * @throws JsonParseException If an invalid escape sequence is found
      */
-    public static String unescape(String s) throws ParseException {
+    public static String unescape(String s) throws JsonParseException {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -82,8 +82,7 @@ public class StringUtils {
                         sb.append("\t");
                         break;
                     default:
-                        System.err.println("Invalid escape sequence in string \"" + s + "\".");
-                        throw new ParseException(s, i);
+                        throw new JsonParseException(s, i, "Invalid escape sequence");
                 }
                 i++;
             } else {

@@ -2,8 +2,8 @@ package org.lavajuno.lucidjson;
 
 import org.lavajuno.lucidjson.util.Index;
 import org.lavajuno.lucidjson.util.StringUtils;
+import org.lavajuno.lucidjson.error.JsonParseException;
 
-import java.text.ParseException;
 
 /**
  * Represents a JSON string value.
@@ -29,10 +29,10 @@ public class JsonString extends JsonEntity {
      * Constructs a JsonString by parsing the input.
      * @param text JSON string to parse
      */
-    protected JsonString(String text, Index i) throws ParseException {
+    protected JsonString(String text, Index i) throws JsonParseException {
         skipSpace(text, i);
         if(text.charAt(i.pos) != '"') {
-            throwParseError(text, i.pos, "Parsing string, expected a '\"'.");
+            throw new JsonParseException(text, i.pos, "Parsing string, expected a '\"'.");
         }
         i.pos++;
         int begin = i.pos;
@@ -43,7 +43,7 @@ public class JsonString extends JsonEntity {
             i.pos++;
         }
         if(i.pos == text.length()) {
-            throwParseError(text, i.pos, "Parsing string, reached end of input.");
+            throw new JsonParseException(text, i.pos, "Parsing string, reached end of input.");
         }
         value = StringUtils.unescape(text.substring(begin, i.pos));
         i.pos++;
