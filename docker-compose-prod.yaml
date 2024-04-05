@@ -134,8 +134,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "4.0"
-          memory: "8192M"
+          cpus: "2.0"
+          memory: "2048M"
 
   # --- Prometheus DB ---
   prometheus:
@@ -154,8 +154,27 @@ services:
     deploy:
       resources:
         limits:
+          cpus: "2.0"
+          memory: "2048M"
+  
+  # --- Grafana ---
+  grafana:
+    image: grafana/grafana:latest
+    container_name: mirror-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - "grafana-storage:/var/lib/grafana"
+    networks:
+      - mirror
+    depends_on:
+      - prometheus
+    deploy:
+      resources:
+        limits:
           cpus: "4.0"
-          memory: "8192M"
+          memory: "2048M"
 
 # Lifetime of "mirror" network is not managed by this compose file
 networks:
