@@ -185,3 +185,5 @@ networks:
 volumes:
   prometheus_data:
     external: true
+  grafana-storage:
+    external: true
