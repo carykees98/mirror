@@ -23,19 +23,18 @@ public class LogFile {
     private final PrintWriter log_print_writer;
 
     /**
-     * Instantiates a LogFile.
+     * Constructs a LogFile.
      * Creates new files and cleans up old ones if needed.
-     * @param application_config ApplicationConfiguration to use
      * @throws IOException Passes along IOExceptions from file accessors
      */
-    public LogFile(ApplicationConfig application_config) throws IOException {
+    public LogFile() throws IOException {
         final String DATE_TAG = FILE_DATE_FORMAT.format(new Date());
         final Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-        calendar.add(Calendar.HOUR, application_config.getFileDuration());
+        calendar.add(Calendar.HOUR, ApplicationConfig.getInstance().getFileDuration());
         DATE_EXPIRY = Long.parseLong(FILE_DATE_FORMAT.format(calendar.getTime()));
-        cleanupLogs(LOGS_PATH, application_config.getFileHistory());
+        cleanupLogs(LOGS_PATH, ApplicationConfig.getInstance().getFileHistory());
 
         Files.createDirectories(Paths.get(LOGS_PATH));
         final String FILE_PATH = LOGS_PATH + DATE_TAG + ".log";

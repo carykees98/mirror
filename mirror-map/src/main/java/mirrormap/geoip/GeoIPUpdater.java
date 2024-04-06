@@ -1,4 +1,4 @@
-package mirrormap.maxmind;
+package mirrormap.geoip;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,35 +12,51 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
+import java.text.ParseException;
 
+import mirrormap.log.Log;
 import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.codehaus.plexus.util.FileUtils;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import org.lavajuno.lucidjson.JsonObject;
+import org.lavajuno.lucidjson.JsonString;
 
-public class DatabaseUpdater implements Runnable{
-
-    private static final String DATABASE_URL = "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&suffix=tar.gz&license_key=";
-    private static final String CHECKSUM_URL = "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&suffix=tar.gz.sha256&license_key=";
-    private static final String DATABASE_FILENAME = "GeoLite2-City.tar.gz";
-    private static final String CHECKSUM_FILENAME = "GeoLite2-City.tar.gz.sha256";
-    private static final String DATABASE_DESTINATION_DIR = "GeoLite2City";
+public class GeoIPUpdater implements Runnable {
     private static final int BUFFER_SIZE = 4096;
+    private static final String DATABASE_DESTINATION_DIR = "GeoLite2City";
+    private final String DATABASE_URL;
+    private final String CHECKSUM_URL;
+    private final String DATABASE_FILENAME;
+    private final String CHECKSUM_FILENAME;
+    private final String MAXMIND_LICENSE_KEY;
+    private final Log log;
 
-    //read maxmind lisense key from .env file
-    private Dotenv dotenv = Dotenv.load();
-    private String maxmindLicense = dotenv.get("MAXMIND_LICENSE");
+    public GeoIPUpdater() throws IOException, ParseException {
+        log = Log.getInstance();
+        JsonObject env = JsonObject.from(
+                Files.readString(Path.of("configs/mirror-map-env.json"))
+        );
+        DATABASE_URL = ((JsonString) env.get("database_url")).value();
+        CHECKSUM_URL = ((JsonString) env.get("checksum_url")).value();
+        DATABASE_FILENAME = ((JsonString) env.get("database_filename")).value();
+        CHECKSUM_FILENAME = ((JsonString) env.get("checksum_filename")).value();
+        MAXMIND_LICENSE_KEY = ((JsonString) env.get("maxmind_license_key")).value();
+    }
+
 
     //used to update the database every 24 hours in a thread
+    @Override
     public void run(){
         //get a pointer to the maxmind handler object
-        DatabaseHandler maxmind = DatabaseHandler.getInstance();
+        GeoIPDatabase maxmind = GeoIPDatabase.getInstance();
         while(true){
+            log.info("Updating GeoIP database...");
             //download the database
-            downloadDatabase();
+            //downloadDatabase();
             //configure the database handler for the database file
-            maxmind.ConfigureHandler();
+            maxmind.configure();
+            log.info("Done updating GeoIP database.");
 
             try{
                 //TODO: Change to sleep till 1am (or midnight)
@@ -48,7 +64,6 @@ public class DatabaseUpdater implements Runnable{
                 Thread.sleep(86400000);
             }
             catch(InterruptedException e){
-                e.printStackTrace();
                 break;
             }
         }
@@ -58,8 +73,8 @@ public class DatabaseUpdater implements Runnable{
     private void downloadDatabase(){
         try{
             //download the Database tar.gz file and the checksum file
-            downloadFile(DATABASE_URL + maxmindLicense, DATABASE_FILENAME);
-            downloadFile(CHECKSUM_URL + maxmindLicense, CHECKSUM_FILENAME);
+            downloadFile(DATABASE_URL + MAXMIND_LICENSE_KEY, DATABASE_FILENAME);
+            downloadFile(CHECKSUM_URL + MAXMIND_LICENSE_KEY, CHECKSUM_FILENAME);
 
             //retrieve the checksum from the checksum file
             String checksum = Files.readString(Path.of(CHECKSUM_FILENAME)).split(" ", 2)[0];
@@ -73,11 +88,12 @@ public class DatabaseUpdater implements Runnable{
             if(!checksum.equals(calculated_checksum)){
                 checksum = checksum.substring(1);
                 if(!checksum.equals(calculated_checksum)){ //sometimes the checksum from maxmind has a leading 0
-                    System.err.println("database checksum failed");
+                    log.error("GeoIP database checksum failed. Aborting this update.");
                     return;
                 }
             }
 
+            log.info("Extracting GeoIP database...");
             //object used to unzip the database tar.gz file
             final TarGZipUnArchiver ua = new TarGZipUnArchiver();
 
@@ -100,8 +116,10 @@ public class DatabaseUpdater implements Runnable{
             ua.setSourceFile(new File(DATABASE_FILENAME));
             ua.setDestDirectory(destDir);
             ua.extract();
+            log.info("Done extracting GeoIP database.");
         }
         catch(IOException | GeneralSecurityException e){
+            log.error("Failed to update GeoIP database.");
             e.printStackTrace();
         }
     }
@@ -131,7 +149,8 @@ public class DatabaseUpdater implements Runnable{
             inputStream.close();
         }
         else{
-            throw new IOException("Failed to connect to " + url + " over http\nResponse Code: " + responseCode);
+            log.error("Failed to connect to " + url + " - got response " + responseCode);
+            throw new IOException("Failed to connect to " + url + " - got response " + responseCode);
         }
     }
 }

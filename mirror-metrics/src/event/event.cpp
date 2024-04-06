@@ -41,7 +41,7 @@ namespace mirror {
 
     std::string Event::toMapString() {
         std::stringstream s;
-        s << project << ":" << bytes_sent << "\n";
+        s << project << ":" << remote_addr;
         return s.str();
     }
 

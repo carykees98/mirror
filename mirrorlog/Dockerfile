@@ -1,6 +1,5 @@
 FROM eclipse-temurin:17 as builder
-RUN apt update && apt upgrade -y
-RUN apt install -y maven
+RUN apt update && apt upgrade -y && apt install -y maven
 WORKDIR /mirror
 COPY ./src /mirror/src
 COPY ./pom.xml /mirror/pom.xml

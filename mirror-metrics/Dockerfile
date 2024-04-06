@@ -1,7 +1,6 @@
 # Build
 FROM ubuntu:latest as builder
-RUN apt update && apt upgrade -y
-RUN apt install -y g++ cmake ninja-build git libzmq3-dev libcurl4-openssl-dev zlib1g-dev
+RUN apt update && apt upgrade -y && apt install -y g++ cmake ninja-build git libzmq3-dev libcurl4-openssl-dev zlib1g-dev
 WORKDIR /mirror
 COPY ./src /mirror/src
 COPY ./lib /mirror/lib
@@ -15,6 +14,7 @@ FROM ubuntu:latest
 RUN apt update && apt upgrade -y
 RUN apt install -y libzmq3-dev
 EXPOSE 8080
+EXPOSE 8081
 WORKDIR /mirror
 COPY --from=builder /mirror/build/mirror-metrics .
 ENTRYPOINT ["/bin/bash", "-c" , "tail -f --lines +1 /mirror/nginx/access.log | ./mirror-metrics"]

@@ -1,25 +1,38 @@
 package org.lavajuno.lucidjson;
 
 import org.lavajuno.lucidjson.util.Index;
+import org.lavajuno.lucidjson.util.StringUtils;
+import org.lavajuno.lucidjson.error.JsonParseException;
 
-import java.text.ParseException;
 
 /**
  * Represents a JSON string value.
  * Provides functionality for getting and setting the value.
+ * Handles escaping strings automatically.
  */
 @SuppressWarnings("unused")
 public class JsonString extends JsonEntity {
     private String value;
 
     /**
-     * Constructs a JsonValue by parsing the input.
+     * Constructs a JsonString with a value of "".
+     */
+    public JsonString() { value = ""; }
+
+    /**
+     * Constructs a JsonString with the given value.
+     * @param value Value for the new JsonString
+     */
+    public JsonString(String value) { this.value = value; }
+
+    /**
+     * Constructs a JsonString by parsing the input.
      * @param text JSON string to parse
      */
-    public JsonString(String text, Index i) throws ParseException {
+    protected JsonString(String text, Index i) throws JsonParseException {
         skipSpace(text, i);
         if(text.charAt(i.pos) != '"') {
-            throwParseError(text, i.pos, "Parsing string, expected a '\"'.");
+            throw new JsonParseException(text, i.pos, "Parsing string, expected a '\"'.");
         }
         i.pos++;
         int begin = i.pos;
@@ -30,9 +43,9 @@ public class JsonString extends JsonEntity {
             i.pos++;
         }
         if(i.pos == text.length()) {
-            throwParseError(text, i.pos, "Parsing string, reached end of input.");
+            throw new JsonParseException(text, i.pos, "Parsing string, reached end of input.");
         }
-        value = text.substring(begin, i.pos);
+        value = StringUtils.unescape(text.substring(begin, i.pos));
         i.pos++;
     }
 
@@ -40,7 +53,7 @@ public class JsonString extends JsonEntity {
      * Gets the value of this JsonString.
      * @return Value of this JsonString
      */
-    public String getValue() { return value; }
+    public String value() { return value; }
 
     /**
      * Sets the value of this JsonString
@@ -49,10 +62,10 @@ public class JsonString extends JsonEntity {
     public void setValue(String value) { this.value = value; }
 
     @Override
-    public String toString() {
-        return "\"" + value + "\"";
+    public String toJsonString() {
+        return "\"" + StringUtils.escape(value) + "\"";
     }
 
     @Override
-    protected String toString(int indent) { return this.toString(); }
+    protected String toJsonString(int indent) { return this.toJsonString(); }
 }

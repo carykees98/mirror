@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.warvan1</groupId>
-    <artifactId>mirrormap</artifactId>
+    <groupId>edu.clarkson.cosi</groupId>
+    <artifactId>mirror-map</artifactId>
     <version>0.0.1</version>
 
     <properties>
@@ -20,14 +20,14 @@
             <version>4.2.0</version>
         </dependency>
         <dependency>
-            <groupId>io.github.cdimascio</groupId>
-            <artifactId>java-dotenv</artifactId>
-            <version>5.2.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-archiver</artifactId>
             <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zeromq</groupId>
+            <artifactId>jeromq</artifactId>
+            <version>0.6.0</version>
         </dependency>
     </dependencies>
     <build>
