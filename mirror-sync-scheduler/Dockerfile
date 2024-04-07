@@ -3,8 +3,7 @@
 
 # Build
 FROM ubuntu:latest as builder
-RUN apt update && apt upgrade -y
-RUN apt install -y g++ cmake libzmq3-dev ninja-build git
+RUN apt update && apt upgrade -y && apt install -y g++ cmake libzmq3-dev ninja-build git
 WORKDIR /mirror
 COPY ./src /mirror/src
 COPY ./lib /mirror/lib
