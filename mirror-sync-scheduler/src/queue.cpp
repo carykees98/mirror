@@ -168,6 +168,8 @@ void Queue::syncProject(std::string name){
 
     //for each command in the vector of commands for the given name in the syncCommands map
     for(std::string command : syncCommands[name]){
+        //have the commands output to /dev/null so that we dont fill log files
+        command = command + " > /dev/null";
         if(dryrun == true){
             command = "echo \"" + command + "\"";  
             //run command
