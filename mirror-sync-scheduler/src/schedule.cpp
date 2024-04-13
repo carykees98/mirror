@@ -11,7 +11,7 @@ using json = nlohmann::json;
 
 #include "schedule.h"
 
-//build a schedule of jobs spaced evenly throuout the day
+//private constructor for schedule class
 Schedule::Schedule(): iterator(0){}
 
 //create an instance of Schedule the first time its ran on the heap
@@ -57,6 +57,7 @@ void Schedule::build(json &config){
     double interval = 1.0/lcm;
     for(int i = 0; i < lcm; i++){
         // std::cout << "---------" << i << "-------------" << std::endl;
+        //create a job with all tasks whos syncs per day lines up with the currient fraction of the lcm
         Job job;
         for(int j = 0; j < tasks.size(); j++){
             Task task = tasks[j];
@@ -65,8 +66,9 @@ void Schedule::build(json &config){
                 job.name.push_back(task.name);
             }
         }
+        //set job time based on interval and i
         job.target_time = interval * i;
-        jobs.push_back(job); //jobs is a vector<Job> created in the class
+        jobs.push_back(job); 
     }
 
     //verify that the schedule works
@@ -144,7 +146,7 @@ std::vector<std::string>* Schedule::nextJob(int &seconds_to_sleep){
         return &(jobs[jobs.size()-1].name);
     }
 
-    //sleep till next job
+    //else sleep till next job
     //target time in seconds - currient time in seconds cast to an interger and added 1
     seconds_to_sleep = (int)((jobs[iterator].target_time * total_seconds_day) - (scheduleTime * total_seconds_day)) + 1;
     return &(jobs[iterator-1].name);

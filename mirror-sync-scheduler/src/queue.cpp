@@ -15,6 +15,7 @@ using json = nlohmann::json;
 
 #include "queue.h"
 
+//private constructor for Queue class
 Queue::Queue(): queueRunning(false){}
 
 //create an instance of Queue the first time its ran on the heap
@@ -107,7 +108,7 @@ void Queue::manual_sync(std::string name){
     t.detach();
 }
 
-//start the job queue thread
+//creates maxThreads jobQueueThreads that sync projects from the queue
 void Queue::startQueue(std::size_t maxThreads){
     if(queueRunning == true){
         logger->warn("startQueue tried to start a second time");
@@ -121,8 +122,7 @@ void Queue::startQueue(std::size_t maxThreads){
     queueRunning = true;
 }
 
-//checks the queue every 5 seconds and runs any added jobs 
-//using threads to run up to "maxThreads" in parallel
+//syncs jobs from the queue in parallel with other jobQueueThreads
 void Queue::jobQueueThread(){
     while(true){
         //lock thread
@@ -166,7 +166,8 @@ void Queue::syncProject(std::string name){
     //used to get the status of rsync when it runs
     int status = -1;
 
-    //for each command in the vector of commands for the given name in the syncCommands map
+    //for each command in the vector of commands for the given project in the syncCommands map
+    //most projects have only one command but some have 2 or even 3
     for(std::string command : syncCommands[name]){
         //have the commands output to /dev/null so that we dont fill log files
         command = command + " > /dev/null";
@@ -230,7 +231,10 @@ std::vector<std::string> Queue::generateSyncCommands(json &config, std::string n
     std::vector<std::string> output;
     //check if project has an rsync json object
     auto rsyncData = config.find("rsync");
+    //check if project has a script json object
     auto scriptData = config.find("script");
+    //(there is a chance that a project has neither rsync or script sync ie. templeOS)
+
     if(rsyncData != config.end()){
         //run rsync and sync the project
         std::string options = config["rsync"].value("options", "");
@@ -255,7 +259,7 @@ std::vector<std::string> Queue::generateSyncCommands(json &config, std::string n
         }
 
     }
-    //project uses script sync
+    //project uses script sync 
     else if(scriptData != config.end()){ 
         std::string command = config["script"].value("command", "");
         std::vector<std::string> arguments = config["script"].value("arguments", std::vector<std::string> {});

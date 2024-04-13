@@ -18,11 +18,14 @@ using json = nlohmann::json;
 //used to stop the program cleanly with ctrl c
 static bool keepRunning = true;
 
+//used by the SIGINT signal handler to end the program
 void intHandler(int i){
     keepRunning = false;
 }
 
 //read json in from a file
+//@param filename std::string json file to read
+//@return json object
 json readJSONFromFile(std::string filename){
     std::ifstream f(filename);
     json config = json::parse(f);
@@ -30,7 +33,7 @@ json readJSONFromFile(std::string filename){
     return config;
 }
 
-//function to handle std::cin in a seperate thread
+//thread for handling manual sync through std input
 void cin_thread(){
     //create a pointer to the queue
     Queue* queue = Queue::getInstance();
@@ -44,8 +47,7 @@ void cin_thread(){
     }
 }
 
-//thread that sends a message to the log server every 29 minutes
-//this keeps the socket from closing
+//thread that sends a message to the log server every 29 minutes to keep the socket from closing
 void keep_alive_thread(){
     mirror::Logger* logger = mirror::Logger::getInstance();
 
@@ -57,14 +59,14 @@ void keep_alive_thread(){
     }
 }
 
-//thread that updates the schedule
+//thread that updates the schedule and syncCommandMap whenever there is any change made to mirrors.json
 void update_schedule_thread(){
     //create a pointer to the schedule
     Schedule* schedule = Schedule::getInstance();
     //create a pointer to the queue
     Queue* queue = Queue::getInstance();
 
-    //strunct to store file information about mirrors.json
+    //struct to store file information about mirrors.json
     struct stat mirrorsFile;
     //initialize the struct
     stat("configs/mirrors.json", &mirrorsFile);
@@ -83,7 +85,7 @@ void update_schedule_thread(){
 
             //build the schedule based on the mirrors.json config
             schedule->build(config["mirrors"]);
-            //create a new sync commnad map
+            //create a new sync command map
             queue->createSyncCommandMap(config["mirrors"]);
             //set reloaded flag for main thread
             schedule->reloaded = true;
@@ -123,7 +125,7 @@ int main(){
     //keep alive thread
     std::thread kt(keep_alive_thread);
 
-    //cin thread for program input
+    //cin thread for manual sync
     std::thread ct(cin_thread);
 
     //update schedule thread
