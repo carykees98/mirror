@@ -1,14 +1,13 @@
 package org.lavajuno.mirrorlog.server;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
 
 import org.lavajuno.mirrorlog.config.ApplicationConfig;
 import org.lavajuno.mirrorlog.io.OutputController;
+import org.lavajuno.mirrorlog.main.LogMap;
 
 /**
  * ServerThread serves a single client and queues events
@@ -36,37 +35,38 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         try {
+            // Ignore unauthorized clients
             if(application_config.isRestricted() &&
                     !application_config.getAllowedAddresses().contains(client_address)) {
                 socket.close();
                 return;
             }
+            // Set up socket, input stream, and buffers
+            socket.setSoTimeout(application_config.getTimeout());
+            InputStream inFromClient = socket.getInputStream();
+            byte[] in_buf = new byte[LogMap.EVENT_BUFFER_SIZE];
+            int in_buf_idx = 0;
+
             outputController.submitEvent(
                     "Log Server",
                     0,
                     "Client at " + client_address + " connected."
             );
-            socket.setSoTimeout(application_config.getTimeout());
-            Scanner inFromClient = new Scanner(socket.getInputStream());
-            PrintWriter outToClient = new PrintWriter(socket.getOutputStream());
-            // Loop while the stream is open
-            while(inFromClient.hasNext()) {
-                String line = inFromClient.nextLine();
-                if(line.matches("^@[0-9A-Za-z_ -]{1,128}@[0-3].*$")) {
-                    String[] fragments = line.split("@", 3);
-                    // Submit log event and respond
-                    outputController.submitEvent(
-                            fragments[1],
-                            Integer.parseInt(fragments[2].substring(0, 1)),
-                            fragments[2].substring(1)
-                    );
-                    outToClient.println(line);
-                    outToClient.flush();
-                } else {
-                    outToClient.println("BAD SYNTAX");
-                    outToClient.flush();
+
+            // Read from stream (break on event buffer overflow)
+            while(in_buf_idx < LogMap.EVENT_BUFFER_SIZE) {
+                int b = inFromClient.read();
+                if(b == -1) { break; } // End of stream, break
+                if(b == '\n') { // Line break, queue event
+                    queueEvent(new String(in_buf, 0, in_buf_idx, StandardCharsets.UTF_8));
+                    in_buf_idx = 0;
+                } else if(b != '\r') { // Read into event buffer
+                    in_buf[in_buf_idx] = (byte) b;
+                    in_buf_idx++;
                 }
             }
+
+            // Clean up
             inFromClient.close();
             socket.close();
             outputController.submitEvent(
@@ -96,6 +96,28 @@ public class ServerThread extends Thread {
             this.socket.close();
         } catch(IOException e) {
             System.err.println("Failed to close connection to " + client_address);
+        }
+    }
+
+    /**
+     * Queues the given event to be logged. If it is malformed,
+     * it will instead queue a warning that this is the case.
+     * @param event Event to queue (represented as a String)
+     */
+    private void queueEvent(String event) {
+        if(event.matches("^@[0-9A-Za-z_ -]{1,128}@[0-3].*$")) {
+            String[] fragments = event.split("@", 3);
+            outputController.submitEvent( // Queue event
+                    fragments[1],
+                    Integer.parseInt(fragments[2].substring(0, 1)),
+                    fragments[2].substring(1)
+            );
+        } else {
+            outputController.submitEvent( // Report bad event
+                    "Log Server",
+                    1,
+                    "Received bad event from " + client_address
+            );
         }
     }
 }

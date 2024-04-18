@@ -19,6 +19,11 @@ public class LogMap {
     public static final int IO_SHUTDOWN_TIMEOUT = 5000;
 
     /**
+     * Size of the event buffer for ServerThreads
+     */
+    public static final int EVENT_BUFFER_SIZE = 4096;
+
+    /**
      * The date and time format of log events.
      */
     public static final SimpleDateFormat LOG_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
