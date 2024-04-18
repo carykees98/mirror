@@ -7,6 +7,7 @@ services:
   log-server:
     build: ./mirrorlog
     container_name: mirrorlog
+    restart: unless-stopped
     expose:
       - 4001
     volumes:
