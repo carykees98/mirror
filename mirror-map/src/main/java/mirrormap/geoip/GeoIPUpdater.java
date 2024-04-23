@@ -53,7 +53,7 @@ public class GeoIPUpdater implements Runnable {
         while(true){
             log.info("Updating GeoIP database...");
             //download the database
-            //downloadDatabase();
+            downloadDatabase();
             //configure the database handler for the database file
             maxmind.configure();
             log.info("Done updating GeoIP database.");
