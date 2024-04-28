@@ -65,7 +65,9 @@ window.onload = async function() {
 
     // Define an event listener for the 'close' event
     socket.onclose = function() {
-        console.log("Connection closed");
+        console.log("Disconnected! Attempting to reconnect...");
+        socket = new WebSocket((window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws");
+        console.log("Reconnected.");
     };
 
     // Define an event listener for the 'error' event
