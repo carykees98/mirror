@@ -25,6 +25,7 @@ async function renderLegend(legend_entries) {
     legend_entries.forEach((v, k) => {
         legend_html += `<span style="hsl(${v}, 100%, 50%)">${k}</span>`;
     });
+    MAP_LEGEND.innerHTML = legend_html;
 }
 
 
