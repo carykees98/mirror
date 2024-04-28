@@ -31,6 +31,7 @@
     --footer_bg: rgb(0, 31, 26);
 }
 
+
 /* ----- Overrides ----- */
 
 body {
@@ -74,6 +75,7 @@ a {
 a:hover {
     cursor: pointer;
 }
+
 
 /* ----- Navigation bar ----- */
 
@@ -121,6 +123,7 @@ a:hover {
     height: 50px;
 }
 
+
 /* ----- Banner ----- */
 
 .banner_container {
@@ -156,6 +159,7 @@ a:hover {
     color: var(--icon_accent_color);
 }
 
+
 /* ----- Footer ----- */
 
 .footer_container {
@@ -179,9 +183,6 @@ a:hover {
     color: inherit;
     font-weight: bold;
 }
-
-
-
 
 
 /* ----- Mirror list ----- */
@@ -215,4 +216,23 @@ a:hover {
     margin: 16px 16px 16px auto;
     border-radius: 5px;
     background: white;
+}
+
+/* ----- Map legend ----- */
+#map_legend {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 150px;
+    z-index: 99;
+    background: rgba(50,50,50,0.4);
+    color: white;
+    box-sizing: border-box;
+    margin: 100px 0 0 8px;
+    padding: 8px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    text-wrap: nowrap;
+    font-size: 12px;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
 }

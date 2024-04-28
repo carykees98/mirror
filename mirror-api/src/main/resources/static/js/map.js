@@ -1,9 +1,12 @@
+const MAP_LEGEND = document.getElementById("map_legend");
+const MAX_CIRCLES = 1000;
+
 /**
  * Gets the hue for a project's color from its name
  * @param {String} project Project name to hash to get hue
  * @returns {Number} Hue for this project
  */
-function hue(project) {
+function getHue(project) {
     let hash = 0;
     for (let i = 0, len = project.length; i < len; i++) {
         let chr = project.charCodeAt(i);
@@ -13,6 +16,17 @@ function hue(project) {
     return hash % 359;
 }
 
+/**
+ * Renders legend entries
+ * @param {Map<String, Number>} legend_entries 
+ */
+async function renderLegend(legend_entries) {
+    legend_html = "";
+    legend_entries.forEach((v, k) => {
+        legend_html += `<span style="hsl(${v}, 100%, 50%)">${k}</span>`;
+    });
+}
+
 
 /* --- On page load --- */
 window.onload = async function() {
@@ -20,7 +34,8 @@ window.onload = async function() {
     const img = document.getElementById("map");
     const ctx = canvas.getContext("2d");
 
-    var circles = []
+    var circles = [];
+    var legend_entries = new Map();
     var socket = new WebSocket((window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws");
 
     // Define an event listener for the 'open' event
@@ -32,11 +47,19 @@ window.onload = async function() {
     socket.onmessage = function(event) {
         console.log("Received message: " + event.data);
         var data = event.data.split("\n");
-        //convert lat and long to a number between 0 and 1
+
+        // Update legend
+        var hue = getHue(data[0]);
+        legend_entries.set(data[0], hue);
+        renderLegend(legend_entries);
+
+        // Add circle
         data[1] = 1 - ((parseFloat(data[1]) + 90) / 180);
         data[2] = (parseFloat(data[2]) + 180) / 360;
-        data.push(hue(data[0]));
+        data.push(hue);
         circles.push(data);
+
+        if(circles.length > MAX_CIRCLES) { circles.shift(); }
     };
 
     // Define an event listener for the 'close' event
