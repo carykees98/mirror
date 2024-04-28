@@ -1,5 +1,5 @@
 # Build
-FROM ubuntu:latest as builder
+FROM ubuntu:jammy as builder
 RUN apt update && apt upgrade -y && apt install -y g++ cmake ninja-build git libzmq3-dev libcurl4-openssl-dev zlib1g-dev
 WORKDIR /mirror
 COPY ./src /mirror/src
@@ -10,7 +10,7 @@ RUN cmake --build /mirror/build --target clean
 RUN cmake --build /mirror/build --target all
 
 # Run
-FROM ubuntu:latest
+FROM ubuntu:jammy
 RUN apt update && apt upgrade -y
 RUN apt install -y libzmq3-dev
 EXPOSE 8080

@@ -2,7 +2,7 @@
 # Replace --uid 1000 and --gid 1000 with the uid and gid of the mirror user
 
 # Build
-FROM ubuntu:latest as builder
+FROM ubuntu:jammy as builder
 RUN apt update && apt upgrade -y && apt install -y g++ cmake libzmq3-dev ninja-build git
 WORKDIR /mirror
 COPY ./src /mirror/src
@@ -13,7 +13,7 @@ RUN cmake --build /mirror/build --target clean
 RUN cmake --build /mirror/build --target all
 
 # Run
-FROM ubuntu:latest
+FROM ubuntu:jammy
 RUN apt update && apt upgrade -y
 RUN apt install -y libzmq3-dev rsync
 WORKDIR /mirror
