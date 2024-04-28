@@ -54,13 +54,14 @@ public class WebsocketServerThread extends Thread {
 
             log.info("Opened new websocket connection.");
 
+            // Respond to pings while the socket is open
             while(true) {
                 try {
-                    log.debug("Received ping, sending pong...");
                     WebsocketFrame ping = new WebsocketFrame(in);
                     WebsocketFrame pong = new WebsocketFrame((byte) 0xA, ping.getPayload());
                     sendFrame(pong);
                 } catch(IOException e) {
+                    log.debug("IOException listening for ping on websocket.");
                     e.printStackTrace(System.err);
                     break;
                 }

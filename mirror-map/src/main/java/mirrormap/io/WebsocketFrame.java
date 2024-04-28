@@ -12,7 +12,7 @@ public class WebsocketFrame {
     private final byte[] payload;
 
     /**
-     * Constructs a WebsocketFrame.
+     * Constructs a WebsocketFrame with the given opcode and payload.
      * @param opcode Opcode for this Websocket frame (see the websocket spec)
      * @param payload Payload for this Websocket frame (max. length 125 bytes)
      */
@@ -27,6 +27,12 @@ public class WebsocketFrame {
         this.payload = payload;
     }
 
+    /**
+     * Constructs a WebsocketFrame from an input stream.
+     * Assumes that messages from the client are masked.
+     * @param in Input stream to read from
+     * @throws IOException If the end of the stream is reached, or the payload is too large
+     */
     public WebsocketFrame(InputStream in) throws IOException {
         byte[] buf = new byte[125];
         opcode = (byte) (readByte(in) & 0x0F); // read opcode
@@ -52,8 +58,18 @@ public class WebsocketFrame {
         return b;
     }
 
+    /**
+     * @return This WebsocketFrame's payload
+     */
     public byte[] getPayload() { return payload; }
 
+    /**
+     * Reads a single byte from an input stream. Throws an exception if the end
+     * of the stream is encountered.
+     * @param in Input stream to read from
+     * @return Single byte read from the input stream
+     * @throws IOException If the end of the stream is reached
+     */
     private byte readByte(InputStream in) throws IOException {
         int b = in.read();
         if(b == -1) { throw new IOException("Unexpected end of stream."); }
