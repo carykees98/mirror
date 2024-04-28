@@ -13,7 +13,7 @@ function getHue(project) {
         hash = (hash << 5) - hash + chr;
         hash |= 0;
     }
-    return hash % 359;
+    return Math.abs(hash % 359);
 }
 
 /**
