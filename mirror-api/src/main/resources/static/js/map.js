@@ -63,7 +63,7 @@ window.onload = async function() {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         circles.forEach((circle) => {
-            ctx.fillStyle = `hsl(${circle[3]}deg, 100% 50%)`;
+            ctx.fillStyle = `hsl(${circle[3]}, 100% 50%)`;
             
             // Draw the circle
             ctx.arc(
