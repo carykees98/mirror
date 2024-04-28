@@ -128,7 +128,7 @@ a:hover {
     margin: 0;
     padding: 120px 0;
     box-sizing: border-box;
-    background-image: url(img/banner.jpg);
+    background-image: url(/img/banner.jpg);
     background-position: center;
     background-size: cover;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
