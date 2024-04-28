@@ -1,3 +1,19 @@
+/**
+ * Gets the hue for a project's color from its name
+ * @param {String} project Project name to hash to get hue
+ * @returns {Number} Hue for this project
+ */
+function hue(project) {
+    let hash = 0;
+    for (let i = 0, len = project.length; i < len; i++) {
+        let chr = project.charCodeAt(i);
+        hash = (hash << 5) - hash + chr;
+        hash |= 0;
+    }
+    return hash % 359;
+}
+
+
 /* --- On page load --- */
 window.onload = async function() {
     const canvas = document.getElementById("canvas");
@@ -19,6 +35,7 @@ window.onload = async function() {
         //convert lat and long to a number between 0 and 1
         data[1] = 1 - ((parseFloat(data[1]) + 90) / 180);
         data[2] = (parseFloat(data[2]) + 180) / 360;
+        data.push(hue(data[0]));
         circles.push(data);
     };
 
@@ -32,23 +49,23 @@ window.onload = async function() {
         console.log("Error occurred: " + error);
     };
 
-    //event listiner for window size change
+    // Event listener for window size change
     window.onresize = function(){
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight - document.getElementById("header").clientHeight;
-    }
-    //we call it once manually when the page first loads
+    };
+
+    // We call it once manually when the page first loads
     window.onresize();
 
-    //draw loop
+    // Draw loop
     setInterval(() => {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         circles.forEach((circle) => {
-            //TODO: change to not have a static color
-            ctx.fillStyle = "yellow";
+            ctx.fillStyle = `hsl(${circle[3]}deg, 100% 50%)`;
             
-            //draw the circle
+            // Draw the circle
             ctx.arc(
                 circle[2] * canvas.width,
                 circle[1] * canvas.height,
@@ -61,5 +78,5 @@ window.onload = async function() {
             ctx.fill();
         })
 
-    }, 100); //draw every 100 ms
+    }, 100); // Draw every 100 ms
 }
