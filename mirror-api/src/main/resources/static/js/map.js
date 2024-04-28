@@ -23,7 +23,7 @@ function getHue(project) {
 async function renderLegend(legend_entries) {
     legend_html = "";
     legend_entries.forEach((v, k) => {
-        legend_html += `<span style="color: hsl(${v}, 100%, 50%)">${k}</span>`;
+        legend_html += `<span style="color: hsl(${v}, 100%, 50%)">${k}</span><br>`;
     });
     MAP_LEGEND.innerHTML = legend_html;
 }
