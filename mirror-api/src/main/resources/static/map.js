@@ -5,7 +5,7 @@ window.onload = async function() {
     const ctx = canvas.getContext("2d");
 
     var circles = []
-    var socket = new WebSocket("/ws");
+    var socket = new WebSocket((window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws");
 
     // Define an event listener for the 'open' event
     socket.onopen = function() {
