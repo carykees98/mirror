@@ -15,11 +15,6 @@ services:
       - "./configs:/mirror/configs:ro"
     networks:
       - mirror
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "1024M"
 
   # --- API ---
   api:
@@ -34,11 +29,6 @@ services:
       - "./configs:/mirror/configs:ro"
     depends_on:
       - log-server
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "1024M"
 
   # --- Map ---
   map:
@@ -55,11 +45,6 @@ services:
     depends_on:
       - log-server
       - metrics
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "1024M"
   
   # --- Sync scheduler ---
   sync-scheduler:
@@ -74,11 +59,6 @@ services:
       - mirror
     depends_on:
       - log-server
-    deploy:
-      resources:
-        limits:
-          cpus: "8.0"
-          memory: "16384M"
     stdin_open: true
     tty: true
 
@@ -94,28 +74,6 @@ services:
       - mirror
     depends_on:
       - log-server
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "4096M"
-
-  # --- Website ---
-#  website:
-#    build: ./mirror-website-nuxt
-#    container_name: mirror-website
-#    restart: unless-stopped
-#    ports:
-#      - "3001:3000"
-#    networks:
-#      - mirror
-#    depends_on:
-#      - api
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "4.0"
-#          memory: "8192M"
 
   # --- Metrics engine ---
   metrics:
@@ -132,11 +90,6 @@ services:
       - mirror
     depends_on:
       - log-server
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2048M"
 
   # --- Prometheus DB ---
   prometheus:
@@ -152,11 +105,6 @@ services:
       - mirror
     depends_on:
       - metrics
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "2048M"
   
   # --- Grafana ---
   grafana:
@@ -171,18 +119,13 @@ services:
       - mirror
     depends_on:
       - prometheus
-    deploy:
-      resources:
-        limits:
-          cpus: "4.0"
-          memory: "2048M"
 
 # Lifetime of "mirror" network is not managed by this compose file
 networks:
   mirror:
     external: true
 
-# Lifetime of "prometheus_data" volume is not managed by this compose file
+# Lifetime of Prometheus/Grafana volumes is not managed by this compose file
 volumes:
   prometheus_data:
     external: true

@@ -14,29 +14,19 @@ services:
       - "./mirrorlog/configs:/mirror/configs:ro"
     networks:
       - mirror
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "1024M"
 
   # --- API ---
   api:
     build: ./mirror-api
     container_name: mirror-api
-    expose:
-      - 8080
+    ports:
+      - "30301:8080"
     networks:
       - mirror
     volumes:
       - "./mirror-api/configs:/mirror/configs:ro"
     depends_on:
       - log-server
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "1024M"
   
   # --- Sync scheduler ---
   sync-scheduler:
@@ -50,11 +40,6 @@ services:
       - mirror
     depends_on:
       - log-server
-    deploy:
-      resources:
-        limits:
-          cpus: "8.0"
-          memory: "4096M"
     stdin_open: true
     tty: true
 
@@ -69,11 +54,6 @@ services:
       - mirror
     depends_on:
       - log-server
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "4096M"
 
   # --- Map ---
   map:
@@ -90,32 +70,14 @@ services:
     depends_on:
       - log-server
       - metrics
-    deploy:
-      resources:
-        limits:
-          cpus: "2.0"
-          memory: "1024M"
 
-  # --- Website ---
-#  website:
-#    build: ./mirror-website-nuxt
-#    container_name: mirror-website
-#    expose:
-#      - 3000
-#    networks:
-#      - mirror
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "4.0"
-#          memory: "8192M"
-  
   # --- Metrics engine ---
   metrics:
     build: ./mirror-metrics
     container_name: mirror-metrics
     expose:
       - 8080
+      - 8081
     volumes:
       - "./mirror-metrics/nginx:/mirror/nginx:ro"
       - "./mirror-metrics/data:/mirror/data"
@@ -124,11 +86,6 @@ services:
     depends_on:
       - log-server
       - api
-    deploy:
-      resources:
-        limits:
-          cpus: "4.0"
-          memory: "8192M"
 
   # --- Prometheus DB ---
   prometheus:
@@ -142,11 +99,6 @@ services:
       - mirror
     depends_on:
       - metrics
-    deploy:
-      resources:
-        limits:
-          cpus: "4.0"
-          memory: "8192M"
 
 # Lifetime of "mirror" network is not managed by this compose file
 networks:
