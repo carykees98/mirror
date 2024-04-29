@@ -7,6 +7,7 @@
 
 import subprocess
 import re
+import os
 
 def runCommandWithOutput(args: list[str]) -> str:
     try:
@@ -84,14 +85,44 @@ def checkLibZ(libs: str) -> bool:
     return not libs.find("libz.so") == -1
 
 
+# ----- Directories -----
+
+def checkStorage() -> bool:
+    print("Checking presence of /storage dir............", end="")
+    return os.path.exists("/storage")
+
+def checkEtcNginx() -> bool:
+    print("Checking presence of /etc/nginx dir..........", end="")
+    return os.path.exists("/etc/nginx")
+
+def checkVarNginx() -> bool:
+    print("Checking presence of /var/log/nginx dir......", end="")
+    return os.path.exists("/var/log/nginx")
+
+
 
 def main():
+    print("")
+    print("----- Checking requirements for production... -----")
+    print("")
+
     # Check Docker
     print("OK" if checkDocker() == True else "Could not find Docker.")
     print("OK" if checkDockerCompose() == True else "Could not find docker-compose v2.")
 
-    # Check toolchain
+    # Check Git
     print("OK" if checkGit() == True else "Could not find git.")
+
+    # Check dirs
+    print("OK" if checkStorage() == True else "Directory /storage does not exist.")
+    print("OK" if checkEtcNginx() == True else "Directory /etc/nginx does not exist.")
+    print("OK" if checkVarNginx() == True else "Directory /var/log/nginx does not exist.")
+
+    print("")
+    print("----- Checking requirements for development... -----")
+    print("")
+
+    # Check tools
     print("OK" if checkGCC() == True else "Could not find g++.")
     print("OK" if checkJDK() == True else "Could not find openjdk 17.")
     print("OK" if checkMaven() == True else "Could not find Maven.")
