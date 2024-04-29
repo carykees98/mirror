@@ -1,5 +1,10 @@
 const MAP_LEGEND = document.getElementById("map_legend");
 const MAX_CIRCLES = 1000;
+const CANVAS = document.getElementById("canvas");
+const IMG = document.getElementById("map");
+const ctx = CANVAS.getContext("2d");
+var circles = [];
+var legend_entries = new Map();
 
 /**
  * Gets the hue for a project's color from its name
@@ -28,22 +33,17 @@ async function renderLegend(legend_entries) {
     MAP_LEGEND.innerHTML = legend_html;
 }
 
-
-/* --- On page load --- */
-window.onload = async function() {
-    const canvas = document.getElementById("canvas");
-    const img = document.getElementById("map");
-    const ctx = canvas.getContext("2d");
-
-    var circles = [];
-    var legend_entries = new Map();
-    var socket = new WebSocket((window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws");
+/**
+ * Connects to the websocket backend to receive events
+ */
+function registerWebsocket() {
+    socket = new WebSocket((window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws");
 
     // Define an event listener for the 'open' event
     socket.onopen = function() {
         console.log("Connected to the WebSocket server");
     };
-    
+
     // Define an event listener for the 'message' event
     socket.onmessage = function(event) {
         console.log("Received message: " + event.data);
@@ -66,43 +66,49 @@ window.onload = async function() {
     // Define an event listener for the 'close' event
     socket.onclose = function() {
         console.log("Disconnected! Attempting to reconnect...");
-        socket = new WebSocket((window.location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws");
-        console.log("Reconnected.");
+        setTimeout(registerWebsocket, 1000);
     };
 
     // Define an event listener for the 'error' event
     socket.onerror = function(error) {
         console.log("Error occurred: " + error);
     };
-
-    // Event listener for window size change
-    window.onresize = function(){
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight - document.getElementById("header").clientHeight;
-    };
-
-    // We call it once manually when the page first loads
-    window.onresize();
-
-    // Draw loop
-    setInterval(() => {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        circles.forEach((circle) => {
-            ctx.fillStyle = `hsl(${circle[3]}, 100%, 50%)`;
-            
-            // Draw the circle
-            ctx.arc(
-                circle[2] * canvas.width,
-                circle[1] * canvas.height,
-                2.0,
-                0,
-                2 * Math.PI,
-                false
-            );
-            ctx.closePath();
-            ctx.fill();
-        })
-
-    }, 100); // Draw every 100 ms
 }
+
+/* --- Global event handlers --- */
+
+// Event listener for window size change
+window.onresize = function(){
+    CANVAS.width = window.innerWidth;
+    CANVAS.height = window.innerHeight - document.getElementById("header").clientHeight;
+};
+
+/* --- On page load --- */
+
+// Connect to backend
+registerWebsocket();
+
+// Size canvas properly
+window.onresize();
+
+// Draw loop
+setInterval(() => {
+    ctx.drawImage(IMG, 0, 0, CANVAS.width, CANVAS.height);
+
+    circles.forEach((circle) => {
+        ctx.fillStyle = `hsl(${circle[3]}, 100%, 50%)`;
+        
+        // Draw the circle
+        ctx.arc(
+            circle[2] * CANVAS.width,
+            circle[1] * CANVAS.height,
+            2.0,
+            0,
+            2 * Math.PI,
+            false
+        );
+        ctx.closePath();
+        ctx.fill();
+    })
+
+}, 500); // Draw every 500 ms
