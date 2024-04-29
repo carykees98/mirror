@@ -80,7 +80,7 @@ function registerWebsocket() {
 // Event listener for window size change
 window.onresize = function(){
     CANVAS.width = window.innerWidth;
-    CANVAS.height = window.innerHeight - document.getElementById("header").clientHeight;
+    CANVAS.height = window.innerHeight;
 };
 
 /* --- On page load --- */
@@ -99,6 +99,7 @@ setInterval(() => {
         ctx.fillStyle = `hsl(${circle[3]}, 100%, 50%)`;
         
         // Draw the circle
+        ctx.beginPath();
         ctx.arc(
             circle[2] * CANVAS.width,
             circle[1] * CANVAS.height,
