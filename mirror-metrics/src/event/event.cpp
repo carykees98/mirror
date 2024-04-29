@@ -94,9 +94,13 @@ namespace mirror {
     std::string Event::parseProject(const std::string &path) {
         std::stringstream s;
         for(uint16_t i = 1; i < path.size() && path.at(i) != '/'; i++) {
-            if(path.at(i) == '.') { return ""; }
+            if(path.at(i) == '.') { return ""; } // Ignore files at site root
             s << path.at(i);
         }
-        return s.str();
+        std::string proj = s.str();
+        if(proj == "css" | proj == "js" | proj == "img" | proj == "api") {
+            return ""; // Ignore internal paths
+        }
+        return proj;
     }
 }
