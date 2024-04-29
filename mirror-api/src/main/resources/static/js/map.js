@@ -7,28 +7,29 @@ var circles = [];
 var legend_entries = new Map();
 
 /**
- * Gets the hue for a project's color from its name
+ * Gets the hue and luminance for a project's color from its name
  * @param {String} project Project name to hash to get hue
- * @returns {Number} Hue for this project
+ * @returns {[Number]} Hue and Luminance for this project
  */
-function getHue(project) {
+function getColor(project) {
     let hash = 0;
     for (let i = 0, len = project.length; i < len; i++) {
         let chr = project.charCodeAt(i);
         hash = (hash << 5) - hash + chr;
         hash |= 0;
     }
-    return Math.abs(hash % 359);
+    hash = Math.abs(hash);
+    return [hash % 360, 50 + (hash % 2) * 25];
 }
 
 /**
  * Renders legend entries
- * @param {Map<String, Number>} legend_entries 
+ * @param {Map<String, [Number]>} legend_entries 
  */
 async function renderLegend(legend_entries) {
     legend_html = "";
     legend_entries.forEach((v, k) => {
-        legend_html += `<span style="color: hsl(${v}, 100%, 50%)">${k}</span><br>`;
+        legend_html += `<span style="color: hsl(${v[0]}, 100%, ${v[1]}%)">${k}</span><br>`;
     });
     MAP_LEGEND.innerHTML = legend_html;
 }
@@ -50,14 +51,15 @@ function registerWebsocket() {
         var data = event.data.split("\n");
 
         // Update legend
-        var hue = getHue(data[0]);
-        legend_entries.set(data[0], hue);
+        var color = getColor(data[0]);
+        legend_entries.set(data[0], color);
         renderLegend(legend_entries);
 
         // Add circle
         data[1] = 1 - ((parseFloat(data[1]) + 90) / 180);
         data[2] = (parseFloat(data[2]) + 180) / 360;
-        data.push(hue);
+        data.push(color[0]);
+        data.push(color[1]);
         circles.push(data);
 
         if(circles.length > MAX_CIRCLES) { circles.shift(); }
@@ -96,7 +98,7 @@ setInterval(() => {
     ctx.drawImage(IMG, 0, 0, CANVAS.width, CANVAS.height);
 
     circles.forEach((circle) => {
-        ctx.fillStyle = `hsl(${circle[3]}, 100%, 50%)`;
+        ctx.fillStyle = `hsl(${circle[3]}, 100%, ${circle[4]}%)`;
         
         // Draw the circle
         ctx.beginPath();
