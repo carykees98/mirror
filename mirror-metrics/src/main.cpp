@@ -116,10 +116,6 @@ int main() {
             state.registerLastEvent(line);
             zmq::message_t message{event.toMapString()};
             pubSocket.send(message, zmq::send_flags::none);
-        } else {
-            //logger->debug("Hit - Invalid path or request.");
-            hit_counter.Add({{"project", "invalid"}}).Increment();
-            byte_counter.Add({{"project", project}}).Increment((double) event.getBytesSent());
         }
 
         // Periodically save state to disk
