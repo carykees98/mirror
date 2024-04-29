@@ -94,6 +94,7 @@ a:hover {
     overflow-y: hidden;
     text-wrap: nowrap;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+    scrollbar-width: none;
 }
 
 .navbar_link {
@@ -235,4 +236,5 @@ a:hover {
     text-wrap: nowrap;
     font-size: 12px;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+    scrollbar-width: none;
 }
