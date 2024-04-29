@@ -17,4 +17,4 @@ EXPOSE 8080
 EXPOSE 8081
 WORKDIR /mirror
 COPY --from=builder /mirror/build/mirror-metrics .
-ENTRYPOINT ["/bin/bash", "-c" , "tail -f --lines +1 /mirror/nginx/access.log | ./mirror-metrics"]
+ENTRYPOINT ["/bin/bash", "-c" , "tail --follow=name --lines +1 /mirror/nginx/access.log | ./mirror-metrics"]
