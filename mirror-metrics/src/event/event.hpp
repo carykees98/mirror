@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <event/timestamp.hpp>
+#include <cstdint>
 
 namespace mirror {
     /**
