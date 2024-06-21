@@ -1,44 +1,47 @@
 <!DOCTYPE html>
-<head>
-    <title>Map - Mirror - Clarkson Open Source Institute</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="img/favicon.ico">
-    <script src="js/themes.js"></script>
+<html lang="en">
+    <head>
+        <title>Map - Mirror - Clarkson Open Source Institute</title>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="icon" href="img/favicon.ico">
+        <script src="js/themes.js"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
-</head>
-<body style="background: black">
-    <div class="navbar_container" id="header"><!--
-        --><a class="navbar_link" href="home.html">Home</a><!--
-        --><a class="navbar_link" href="projects.html">Projects</a><!--
-        --><a class="navbar_link" href="about.html">About</a><!--
-        --><a class="navbar_link navbar_active" href="map.html">Map</a><!--
-        --><a class="navbar_link" href="contact.html">Contact</a><!--
-        --><button class="navbar_link navbar_theme" onclick="handleThemeToggle()"><i class="fa-solid fa-cloud-moon"></i></button><!--
-        -->
-    </div>
-
-    <div class="navbar_spacer"></div>
-
-    <div>
-        <div id="map_legend">
-            ...
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+    </head>
+    
+    <body style="background: black">
+        <div class="navbar_container" id="header"><!--
+            --><a class="navbar_link" href="home.html">Home</a><!--
+            --><a class="navbar_link" href="projects.html">Projects</a><!--
+            --><a class="navbar_link" href="about.html">About</a><!--
+            --><a class="navbar_link navbar_active" href="map.html">Map</a><!--
+            --><a class="navbar_link" href="contact.html">Contact</a><!--
+            --><button class="navbar_link navbar_theme" onclick="handleThemeToggle()"><i class="fa-solid fa-cloud-moon"></i></button><!--
+            -->
         </div>
-        <img id="map" src="img/map.jpg" alt="" style="display: none;" />
-        <canvas id="canvas" style="position:sticky"></canvas>
-    </div>
 
-    <div class="footer_container">
-        <p class="footer_content">
-            Hosted by the
-            <a class="footer_link" href="https://cosi.clarkson.edu">Clarkson Open Source Institute.</a>
-            <a class="footer_link" href="contact.html">Contact Us</a>
-            <br>
-            <br>
-            Mirror is Free and Open Source.
-            <a class="footer_link" href="#">View on Github</a>
-        </p>
-    </div>
+        <div class="navbar_spacer"></div>
 
-    <script src="js/map.js"></script>
-</body>
+        <div>
+            <div id="map_legend">
+                ...
+            </div>
+            <img id="map" src="img/map.jpg" alt="" style="display: none;" />
+            <canvas id="canvas" style="position:sticky"></canvas>
+        </div>
+
+        <div class="footer_container">
+            <p class="footer_content">
+                Hosted by the
+                <a class="footer_link" href="https://cosi.clarkson.edu">Clarkson Open Source Institute.</a>
+                <a class="footer_link" href="contact.html">Contact Us</a>
+                <br>
+                <br>
+                Mirror is Free and Open Source.
+                <a class="footer_link" href="#">View on Github</a>
+            </p>
+        </div>
+
+        <script src="js/map.js"></script>
+    </body>
+</html>
