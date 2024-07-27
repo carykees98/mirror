@@ -2,7 +2,6 @@ package mirrortorrent.main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.Thread;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,66 +13,103 @@ import org.lavajuno.lucidjson.JsonNumber;
 import org.lavajuno.lucidjson.JsonObject;
 import org.lavajuno.lucidjson.JsonString;
 
-import mirrortorrent.torrents.*;
-import mirrortorrent.io.*;
+import mirrortorrent.io.Log;
+import mirrortorrent.torrents.ScrapeTorrents;
+import mirrortorrent.torrents.SyncTorrents;
 
-public class MirrorTorrentApplication {    
-    public static void main(String[] args){
+public class MirrorTorrentApplication {
 
-        try{
-            //read torrent folder path from env.json file
-            JsonObject env = JsonObject.fromFile("configs/torrent-handler-env.json");
-            String torrentFolder = ((JsonString) env.get("torrentFolder")).getValue();
-            String downloadFolder = ((JsonString) env.get("downloadFolder")).getValue();
-            String logServerHost = ((JsonString) env.get("logServerHost")).getValue();
-            int logServerPort = ((JsonNumber) env.get("logServerPort")).getInt();
+    public static void main(String[] args) {
+        final String envFilePath = "configs/torrent-handler-env.json";
+        String torrentFolder = "";
+        String downloadFolder = "";
+        String logServerHost = "";
+        int logServerPort = -1;
 
-            Log log = Log.getInstance();
+        try {
+            // Read config into a JSON object
+            JsonObject env = JsonObject.fromFile(envFilePath);
+            torrentFolder = ((JsonString) env.get("torrentFolder")).getValue();
+            downloadFolder = ((JsonString) env.get("downloadFolder")).getValue();
+            logServerHost = ((JsonString) env.get("logServerHost")).getValue();
+            logServerPort = ((JsonNumber) env.get("logServerPort")).getInt();
+        } catch (FileNotFoundException e) {
+            System.out.println("FATAL: Failed to open environment file " + envFilePath);
+            System.exit(1);
+        } catch (ParseException e) {
+            System.out.println("FATAL: Failed to parse environment file " + envFilePath);
+            System.exit(1);
+        }
+
+        // Initialize Logger
+        Log log = Log.getInstance();
+        if (!logServerHost.equals("") && logServerPort != -1) {
             log.configure(logServerHost, logServerPort, "Torrent Handler");
+        } else {
+            System.out.println("Log Server Host or Port not set! Exiting.");
+            System.exit(1);
+        }
 
-            //if torrent folder doesnt exist create it
-            File dir = new File(torrentFolder);
-            if(!dir.exists()){
-                log.info("creating torrent folder");
-                dir.mkdir();
+        // If torrents directory doesn't exist, create it
+        if (!torrentFolder.equals("")) {
+            File torrentsDirectory = new File(torrentFolder);
+            if (!torrentsDirectory.exists()) {
+                log.info("Creating torrents directory");
+                torrentsDirectory.mkdir();
             }
+        } else {
+            log.fatal("Torrents directory not set! Exiting.");
+            System.exit(1);
+        }
 
-            //if download folder doesnt exist create it
-            File dir2 = new File(downloadFolder);
-            if(!dir2.exists()){
-                log.info("creating download folder");
-                dir2.mkdir();
+        // If downloads directory doesn't exist, create it.
+        if (!downloadFolder.equals("")) {
+            File downloadsDirectory = new File(downloadFolder);
+            if (!downloadsDirectory.exists()) {
+                log.info("Creating downloads directory");
+                downloadsDirectory.mkdir();
             }
+        } else {
+            log.fatal("Downloads directory not set! Exiting.");
+            System.exit(1);
+        }
 
-            //load mirrors.json
+        try {
+            // Load config from mirrors.json
             JsonObject config = JsonObject.fromFile("configs/mirrors.json");
 
-            //scrape torrents from torrent webpages
-            Thread torrentScrapeThread = new Thread( new ScrapeTorrents((JsonArray) config.get("torrents"), torrentFolder));
+            // Spawn Torrent Scraper Thread
+            Thread torrentScrapeThread = new Thread(
+                    new ScrapeTorrents((JsonArray) config.get("torrents"), torrentFolder));
             torrentScrapeThread.start();
             log.info("Scrape Torrents Thread Started");
 
-            //sync torrents into the torrent and download directorys from elsewhere in the storage directory
-            Thread syncTorrentsThread = new Thread( new SyncTorrents((JsonObject) config.get("mirrors"), torrentFolder, downloadFolder));
+            // Spawn Torrent Syncing Thread
+            Thread syncTorrentsThread = new Thread(
+                    new SyncTorrents((JsonObject) config.get("mirrors"), torrentFolder, downloadFolder));
             syncTorrentsThread.start();
             log.info("Sync Torrents Thread Started");
-            
-            //join threads
-            syncTorrentsThread.join();
-            log.info("Sync Torrents Thread Stopped");
-            torrentScrapeThread.join();
-            log.info("Scrape Torrent Thread Stopped");
 
-            //sleep till 1am the next day
-            LocalDateTime currientDateTime = LocalDateTime.now();
-            LocalDate targetDate = LocalDate.now().plusDays(1);
-            LocalTime targetTime = LocalTime.of(1, 0);
-            LocalDateTime targetDateTime = LocalDateTime.of(targetDate, targetTime);
-            long millsToSleep = ChronoUnit.MILLIS.between(currientDateTime, targetDateTime);
-            Thread.sleep(millsToSleep);
+            // Join Threads Upon Completion
+            syncTorrentsThread.join();
+            log.info("Joined Sync Torrents Thread");
+            torrentScrapeThread.join();
+            log.info("Joined Torrent Scraper Thread");
+        } catch (FileNotFoundException | ParseException | InterruptedException e) {
+            log.fatal(e.getMessage());
         }
-        catch(FileNotFoundException | ParseException | InterruptedException e){
-            e.printStackTrace();
+
+        // Sleep Until 1am The Following Day
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDate targetDate = LocalDate.now().plusDays(1);
+        LocalTime targetTime = LocalTime.of(1, 0);
+        LocalDateTime timeToWake = LocalDateTime.of(targetDate, targetTime);
+        long millisecondsToSleep = ChronoUnit.MILLIS.between(currentTime, timeToWake);
+
+        try {
+            Thread.sleep(millisecondsToSleep);
+        } catch (InterruptedException e) {
+            log.fatal(e.getMessage());
         }
     }
 }
