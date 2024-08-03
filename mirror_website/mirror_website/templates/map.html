@@ -1,0 +1,34 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block title %}Projects{% endblock %}
+
+{% block body %}
+<div class="navbar_spacer"></div>
+
+<div>
+    <div id="map_legend">
+        ...
+    </div>
+    <img id="map" src="{% static 'img/map.jpg' %}" alt="" style="display: none;" />
+    <canvas id="canvas" style="position:sticky"></canvas>
+</div>
+
+<div class="footer_container">
+    <p class="footer_content">
+        Hosted by the
+        <a class="footer_link" href="https://cosi.clarkson.edu">Clarkson Open Source Institute.</a>
+        <a class="footer_link" href="contact.html">Contact Us</a>
+        <br>
+        <br>
+        Mirror is Free and Open Source.
+        <a class="footer_link" href="#">View on Github</a>
+    </p>
+</div>
+
+<script src="{% static 'js/map.js' %}"></script>
+
+<script>
+    document.getElementById("navbar_map").classList.add("active");
+</script>
+{% endblock %}

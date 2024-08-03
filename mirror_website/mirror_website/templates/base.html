@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}{% endblock %} - mirror.clarkson.edu</title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'fa/css/solid.min.css' %}">
+        <link rel="stylesheet" href="{% static 'fa/css/fontawesome.min.css' %}">
+        <link rel="icon" href="{% static 'img/favicon.ico' %}">
+        <script src="{% static 'js/base.js' %}"></script>
+    </head>
+
+    <body>
+        <div class="navbar"><!--
+            --><a href="{% url 'home' %}" id="navbar_home">Home</a><!--
+            --><a href="{% url 'projects' %}" id="navbar_projects">Projects</a><!--
+            --><a href="{% url 'about' %}" id="navbar_about">About</a><!--
+            --><a href="{% url 'map' %}" id="navbar_map">Map</a><!--
+            --><a href="{% url 'contact' %}" id="navbar_contact">Contact</a><!--
+            --><a onclick="changeColorTheme()"><i class="fa-solid fa-circle-half-stroke"></i></a><!--
+            -->
+        </div>
+    </body>
+
+    {% block body %}{% endblock %}
+</html>

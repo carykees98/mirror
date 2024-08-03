@@ -15,10 +15,10 @@ services:
     networks:
       - mirror
 
-  # --- API ---
+  # --- Website ---
   api:
-    build: ./mirror-api
-    container_name: mirror-api
+    build: ./mirror_website
+    container_name: mirror_website
     ports:
       - "30301:8080"
     networks:

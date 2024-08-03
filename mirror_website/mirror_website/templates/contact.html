@@ -1,0 +1,50 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block title %}Contact{% endblock %}
+
+{% block body %}
+<div class="navbar_spacer"></div>
+
+<div class="content_container">
+    <h1>Contact Us</h1>
+    <p>
+        To get in touch with the Mirror team, send a message to 
+        <a href="mailto:mirroradmin@clarkson.edu">mirroradmin[@]clarkson[.]edu.</a>
+        We check this inbox periodically, however if a matter is
+        time-sensitive we ask that you also
+        <a href="https://cosi.clarkson.edu/contact.html">contact COSI directly.</a>
+    </p>
+</div>
+
+<div class="content_container">
+    <h1>Request a Mirror</h1>
+    <p>
+        We are always looking for new projects to mirror! If there's 
+        something you'd like us to mirror, please open an issue with the 
+        "Mirror Request" tag on our
+        <a href="#">Github repository.</a>
+        The issue template includes instructions on what information we need
+        to start syncing the mirror. If possible, rsync is preferred, but we
+        can also sync over HTTP.
+    </p>
+</div>
+
+<br><br><br><br><br><br><br><br>
+
+<div class="footer_container">
+    <p class="footer_content">
+        Hosted by the
+        <a class="footer_link" href="https://cosi.clarkson.edu">Clarkson Open Source Institute.</a>
+        <a class="footer_link" href="contact.html">Contact Us</a>
+        <br>
+        <br>
+        Mirror is Free and Open Source.
+        <a class="footer_link" href="#">View on Github</a>
+    </p>
+</div>
+
+<script>
+    document.getElementById("navbar_contact").classList.add("active");
+</script>
+{% endblock %}
