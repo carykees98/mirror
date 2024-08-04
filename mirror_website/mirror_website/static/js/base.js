@@ -13,6 +13,6 @@ if(localStorage.getItem("color_theme") == null && window.matchMedia) {
     if(!window.matchMedia("(prefers-color-scheme: dark)").matches) {
         document.documentElement.setAttribute("color_theme", "light");
     }
-} else if(localStorage.getItem("color_theme") == "dark") {
-    document.documentElement.setAttribute("color_theme", "dark");
+} else if(localStorage.getItem("color_theme") == "light") {
+    document.documentElement.setAttribute("color_theme", "light");
 }

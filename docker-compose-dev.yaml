@@ -16,17 +16,29 @@ services:
       - mirror
 
   # --- Website ---
-  api:
+  website:
     build: ./mirror_website
     container_name: mirror_website
-    ports:
-      - "30301:8080"
+    expose:
+      - 8000
     networks:
       - mirror
     volumes:
-      - "./mirror-api/configs:/mirror/configs:ro"
+      - "./mirror_website/configs:/home/mirror/configs:ro"
+
+  # --- Website static file server / proxy ---
+  website_proxy:
+    build:
+      context: ./mirror_website
+      dockerfile: proxy.Dockerfile
+    container_name: mirror_website_proxy
+    ports:
+      - "127.0.0.1:30301:80"
+    networks:
+      - mirror
     depends_on:
-      - log-server
+      - website
+
   
   # --- Sync scheduler ---
   sync-scheduler:
@@ -44,32 +56,32 @@ services:
     tty: true
 
   # --- Torrent handler ---
-  torrent-handler:
-    build: ./mirror-torrent-handler
-    container_name: mirror-torrent-handler
-    volumes:
-      - "./mirror-torrent-handler/storage:/storage"
-      - "./mirror-torrent-handler/configs:/mirror/configs:ro"
-    networks:
-      - mirror
-    depends_on:
-      - log-server
+#  torrent-handler:
+#    build: ./mirror-torrent-handler
+#    container_name: mirror-torrent-handler
+#    volumes:
+#      - "./mirror-torrent-handler/storage:/storage"
+#      - "./mirror-torrent-handler/configs:/mirror/configs:ro"
+#    networks:
+#      - mirror
+#    depends_on:
+#      - log-server
 
   # --- Map ---
-  map:
-    build: ./mirror-map
-    container_name: mirror-map
-    restart: unless-stopped
-    ports:
-      - "30302:8080"
-    networks:
-      - mirror
-    volumes:
-      - "./mirror-map/configs:/mirror/configs:ro"
-      - "./mirror-map/GeoLite2City:/mirror/GeoLite2City"
-    depends_on:
-      - log-server
-      - metrics
+#  map:
+#    build: ./mirror-map
+#    container_name: mirror-map
+#    restart: unless-stopped
+#    ports:
+#      - "30302:8080"
+#    networks:
+#      - mirror
+#    volumes:
+#      - "./mirror-map/configs:/mirror/configs:ro"
+#      - "./mirror-map/GeoLite2City:/mirror/GeoLite2City"
+#    depends_on:
+#      - log-server
+#      - metrics
 
   # --- Metrics engine ---
   metrics:
@@ -85,7 +97,7 @@ services:
       - mirror
     depends_on:
       - log-server
-      - api
+      - website
 
   # --- Prometheus DB ---
   prometheus:
