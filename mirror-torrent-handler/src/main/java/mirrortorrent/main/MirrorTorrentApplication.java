@@ -2,7 +2,9 @@ package mirrortorrent.main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.text.ParseException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -11,39 +13,47 @@ import java.time.temporal.ChronoUnit;
 import org.lavajuno.lucidjson.JsonArray;
 import org.lavajuno.lucidjson.JsonNumber;
 import org.lavajuno.lucidjson.JsonObject;
-import org.lavajuno.lucidjson.JsonString;
+import org.lavajuno.lucidjson.error.JsonParseException;
 
 import mirrortorrent.io.Log;
-import mirrortorrent.torrents.ScrapeTorrents;
-import mirrortorrent.torrents.SyncTorrents;
+import mirrortorrent.torrents.TorrentScraper;
+import mirrortorrent.torrents.TorrentSyncer;
 
 public class MirrorTorrentApplication {
 
+    /**
+     * Entry point for Mirror's torrent handler
+     */
     public static void main(String[] args) {
-        final String envFilePath = "configs/torrent-handler-env.json";
-        String torrentFolder = "";
-        String downloadFolder = "";
-        String logServerHost = "";
+        File torrentDirectory = null;
+        File downloadDirectory = null;
+        String logServerHost = null;
         int logServerPort = -1;
 
         try {
-            // Read config into a JSON object
-            JsonObject env = JsonObject.fromFile(envFilePath);
-            torrentFolder = ((JsonString) env.get("torrentFolder")).getValue();
-            downloadFolder = ((JsonString) env.get("downloadFolder")).getValue();
-            logServerHost = ((JsonString) env.get("logServerHost")).getValue();
-            logServerPort = ((JsonNumber) env.get("logServerPort")).getInt();
+            final File environmentFile = new File("configs/torrent-handler-env.json");
+            final String environmentJsonString = new String(Files.readAllBytes(environmentFile.toPath()));
+
+            JsonObject environment = JsonObject.from(environmentJsonString);
+
+            torrentDirectory = new File(environment.get("torrent_directory").toJsonString());
+            downloadDirectory = new File(environment.get("download_directory").toJsonString());
+            logServerHost = environment.get("log_server_host").toJsonString();
+            logServerPort = ((JsonNumber) environment.get("log_server_port")).toInt();
         } catch (FileNotFoundException e) {
-            System.out.println("FATAL: Failed to open environment file " + envFilePath);
+            System.out.println("Environmment file does not exist! Exiting.");
             System.exit(1);
-        } catch (ParseException e) {
-            System.out.println("FATAL: Failed to parse environment file " + envFilePath);
+        } catch (IOException e) {
+            System.out.println("Failed to read environment file! Exception message: " + e.getMessage());
+            System.exit(1);
+        } catch (JsonParseException e) {
+            System.out.println("Failed to parse environment file! Exception message: " + e.getMessage());
             System.exit(1);
         }
 
         // Initialize Logger
         Log log = Log.getInstance();
-        if (!logServerHost.equals("") && logServerPort != -1) {
+        if (logServerPort != -1) {
             log.configure(logServerHost, logServerPort, "Torrent Handler");
         } else {
             System.out.println("Log Server Host or Port not set! Exiting.");
@@ -51,65 +61,68 @@ public class MirrorTorrentApplication {
         }
 
         // If torrents directory doesn't exist, create it
-        if (!torrentFolder.equals("")) {
-            File torrentsDirectory = new File(torrentFolder);
-            if (!torrentsDirectory.exists()) {
-                log.info("Creating torrents directory");
-                torrentsDirectory.mkdir();
+        if (!torrentDirectory.exists()) {
+            log.info("Creating torrents directory");
+
+            if (!torrentDirectory.mkdir()) {
+                log.fatal("Failed to create torrents directory!");
+                System.exit(1);
             }
-        } else {
-            log.fatal("Torrents directory not set! Exiting.");
-            System.exit(1);
         }
 
         // If downloads directory doesn't exist, create it.
-        if (!downloadFolder.equals("")) {
-            File downloadsDirectory = new File(downloadFolder);
-            if (!downloadsDirectory.exists()) {
-                log.info("Creating downloads directory");
-                downloadsDirectory.mkdir();
+        if (!downloadDirectory.exists()) {
+            log.info("Creating downloads directory");
+
+            if (!downloadDirectory.mkdir()) {
+                log.fatal("Failed to create torrents directory!");
+                System.exit(1);
             }
-        } else {
-            log.fatal("Downloads directory not set! Exiting.");
-            System.exit(1);
         }
 
-        try {
-            // Load config from mirrors.json
-            JsonObject config = JsonObject.fromFile("configs/mirrors.json");
+        while (true) {
+            JsonObject mirrorsConfig = new JsonObject();
+            try {
+                // Load mirrorsConfig from mirrors.json
+                final File mirrorsJsonFile = new File("configs/torrent-handler-env.json");
+                final String mirrorsJsonString = new String(Files.readAllBytes(mirrorsJsonFile.toPath()));
+
+                mirrorsConfig = JsonObject.from(mirrorsJsonString);
+            } catch (IOException | JsonParseException e) {
+                log.fatal(e.getMessage());
+                System.exit(1);
+            }
 
             // Spawn Torrent Scraper Thread
-            Thread torrentScrapeThread = new Thread(
-                    new ScrapeTorrents((JsonArray) config.get("torrents"), torrentFolder));
+            final Thread torrentScrapeThread = new Thread(
+                    new TorrentScraper((JsonArray) mirrorsConfig.get("torrents"), torrentDirectory));
             torrentScrapeThread.start();
             log.info("Scrape Torrents Thread Started");
 
             // Spawn Torrent Syncing Thread
-            Thread syncTorrentsThread = new Thread(
-                    new SyncTorrents((JsonObject) config.get("mirrors"), torrentFolder, downloadFolder));
+            final Thread syncTorrentsThread = new Thread(
+                    new TorrentSyncer((JsonObject) mirrorsConfig.get("mirrors"), torrentDirectory, downloadDirectory));
             syncTorrentsThread.start();
             log.info("Sync Torrents Thread Started");
 
-            // Join Threads Upon Completion
-            syncTorrentsThread.join();
-            log.info("Joined Sync Torrents Thread");
-            torrentScrapeThread.join();
-            log.info("Joined Torrent Scraper Thread");
-        } catch (FileNotFoundException | ParseException | InterruptedException e) {
-            log.fatal(e.getMessage());
-        }
+            try {
+                // Join Threads Upon Completion
+                syncTorrentsThread.join();
+                log.info("Joined Sync Torrents Thread");
+                torrentScrapeThread.join();
+                log.info("Joined Torrent Scraper Thread");
 
-        // Sleep Until 1am The Following Day
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDate targetDate = LocalDate.now().plusDays(1);
-        LocalTime targetTime = LocalTime.of(1, 0);
-        LocalDateTime timeToWake = LocalDateTime.of(targetDate, targetTime);
-        long millisecondsToSleep = ChronoUnit.MILLIS.between(currentTime, timeToWake);
+                // Sleep Until 1am The Following Day
+                LocalDateTime timeToWake = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(1, 0));
+                long millisecondsToSleep = ChronoUnit.MILLIS.between(LocalDateTime.now(), timeToWake);
 
-        try {
-            Thread.sleep(millisecondsToSleep);
-        } catch (InterruptedException e) {
-            log.fatal(e.getMessage());
+                Thread.sleep(millisecondsToSleep);
+            } catch (DateTimeException e) {
+                log.warn(e.getMessage());
+            } catch (InterruptedException e) {
+                log.fatal(e.getMessage());
+                System.exit(1);
+            }
         }
     }
 }
