@@ -116,6 +116,7 @@ public class MirrorTorrentApplication {
                 LocalDateTime timeToWake = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(1, 0));
                 long millisecondsToSleep = ChronoUnit.MILLIS.between(LocalDateTime.now(), timeToWake);
 
+                log.info("Sleeping until 1am tomorrow");
                 Thread.sleep(millisecondsToSleep);
             } catch (DateTimeException e) {
                 log.warn(e.getMessage());
