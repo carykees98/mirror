@@ -19,7 +19,10 @@ public class TorrentSyncer implements Runnable {
     final private File torrentFolder;
     final private File downloadFolder;
 
-    public TorrentSyncer(JsonObject mirrorsConfig, File torrentsDirectory, File downloadsDirectory) {
+    public TorrentSyncer(
+            final JsonObject mirrorsConfig,
+            final File torrentsDirectory,
+            final File downloadsDirectory) {
         this.mirrorsConfig = mirrorsConfig;
         this.torrentFolder = torrentsDirectory;
         this.downloadFolder = downloadsDirectory;
@@ -29,24 +32,20 @@ public class TorrentSyncer implements Runnable {
     public void run() {
         Log log = Log.getInstance();
 
-        for (String projectName : mirrorsConfig.keys()) {
-            JsonObject projectConfig = (JsonObject) mirrorsConfig.get(projectName);
-            String projectTorrents = projectConfig.get("torrents").toString();
+        for (final String projectName : mirrorsConfig.keys()) {
+            final JsonObject projectConfig = (JsonObject) mirrorsConfig.get(projectName);
+            final String torrentGlobString = projectConfig.get("torrents").toString();
 
-            if (projectTorrents == null) {
+            if (torrentGlobString == null) {
                 continue;
             }
 
             log.info("Syncing torrents for " + projectName);
 
-            // Get the glob string for the `mirrors.json` project
-            String glob = projectTorrents;
-            System.out.println(glob);
-
-            // Find all torrent files from the given glob
-            HashSet<String> torrentFiles = new HashSet<>();
+            // Find all torrent files from the given torrentGlobString
+            HashSet<String> torrentFiles = null;
             try {
-                torrentFiles.addAll(GlobSearch(glob, "", ".torrent"));
+                torrentFiles = GlobSearch(torrentGlobString, new File(""), ".torrent");
             } catch (IOException e) {
                 log.warn(e.getMessage());
                 continue;
@@ -58,7 +57,7 @@ public class TorrentSyncer implements Runnable {
             }
 
             // Create project directories if they do not already exist
-            File projectTorrentFolder = torrentFolder
+            final File projectTorrentFolder = torrentFolder
                     .toPath()
                     .resolve(projectName)
                     .toFile();
@@ -66,7 +65,7 @@ public class TorrentSyncer implements Runnable {
                 projectTorrentFolder.mkdir();
             }
 
-            File projectDownloadFolder = downloadFolder
+            final File projectDownloadFolder = downloadFolder
                     .toPath()
                     .resolve(projectName)
                     .toFile();
@@ -75,10 +74,10 @@ public class TorrentSyncer implements Runnable {
             }
 
             // Create a hard link for each torrent absoluteFilePath
-            for (String absoluteFilePath : torrentFiles) {
-                List<String> absolutePathComponents = Arrays.asList(absoluteFilePath.split("/"));
+            for (final String absoluteFilePath : torrentFiles) {
+                final List<String> absolutePathComponents = Arrays.asList(absoluteFilePath.split("/"));
 
-                File linkLocation = torrentFolder
+                final File linkLocation = torrentFolder
                         .toPath()
                         .resolve(projectName)
                         .resolve(absolutePathComponents.getLast())
@@ -93,16 +92,16 @@ public class TorrentSyncer implements Runnable {
                     }
                 }
 
-                // add non torrent absoluteFilePath to downloads directory if it exists in the same glob
-                File newDownloadFile = downloadFolder
+                // Add non torrent absoluteFilePath to downloads directory if it exists in the same torrentGlobString
+                final File newDownloadFile = downloadFolder
                         .toPath()
                         .resolve(projectName)
                         .resolve(removeSuffix(absolutePathComponents.getLast(), ".torrent"))
                         .toFile();
 
                 try {
-                    for (String foundFile
-                            : GlobSearch(glob, "", newDownloadFile.getPath())) {
+                    for (final String foundFile
+                            : GlobSearch(torrentGlobString, new File("/"), newDownloadFile.getPath())) {
                         if (!newDownloadFile.exists()) {
                             Files.createLink(newDownloadFile.toPath(), Paths.get(foundFile));
                         }
@@ -114,64 +113,62 @@ public class TorrentSyncer implements Runnable {
         }
     }
 
-    public String removeSuffix(String s, String suffix) {
+    public String removeSuffix(final String s, final String suffix) {
         return s.substring(0, s.length() - suffix.length());
     }
 
-    //given a glob string find all the files that match that string
-    public HashSet<String> GlobSearch(String glob, String path, String suffix) throws IOException {
+    // Given a glob string, recursively find all the files that match that string
+    public HashSet<String> GlobSearch(
+            String globString,
+            File directoryToSearch,
+            final String suffix) throws IOException {
+        // Create an array containing each part of the torrentGlobString string
+        List<String> globParts = Arrays.asList(globString.split("/"));
+        // Create a hashset to collect all the files we find into
+        HashSet<String> foundFiles = new HashSet<>();
 
-        //create an array containing each part of the glob string
-        String[] globParts = glob.split("/");
-        //create a hashset to collect all the files we find into
-        HashSet<String> output = new HashSet<>();
+        if (!globString.equals("")) {
+            if (globParts.get(0).equals("*")) {
+                // Remove the 0th element from the globParts array
+                globParts.remove(0);
 
-        if (!glob.equals("")) {
-            if (globParts[0].equals("*")) {
+                // Join globparts array back into torrentGlobString
+                globString = String.join("/", globParts);
 
-                //remove the first element from the globParts array
-                globParts = Arrays.copyOfRange(globParts, 1, globParts.length);
-                //join globparts array back into glob
-                glob = String.join("/", globParts);
-
-                //call GlobSearch on every directory in the directory
-                File dir = new File(path);
-                File[] dirList = dir.listFiles();
-                for (File f : dirList) {
-                    if (f.isDirectory()) {
-                        output.addAll(GlobSearch(glob, f.toString() + "/", suffix));
+                // Call GlobSearch on every sub directory in the current directory
+                for (final File item : directoryToSearch.listFiles()) {
+                    if (item.isDirectory()) {
+                        foundFiles.addAll(GlobSearch(globString, item, suffix));
                     }
                 }
-
             } else {
-                //add first element of array to path
-                path += globParts[0] + "/";
+                directoryToSearch = directoryToSearch
+                        .toPath()
+                        .resolve(globParts.get(0))
+                        .toFile();
 
-                //check to make sure that the path exists
-                File dir = new File(path);
-                if (!dir.exists()) {
-                    System.out.println("error: " + path + " not found");
+                // Check to make sure that the directoryToSearch exists
+                if (!directoryToSearch.exists()) {
+                    System.out.println("error: " + directoryToSearch + " not found");
                     return new HashSet<>();
                 }
 
-                //remove the first element from the globParts array
-                globParts = Arrays.copyOfRange(globParts, 1, globParts.length);
+                // Remove the 0th element from the globParts array
+                globParts.remove(0);
 
-                //recursivly call GlobSearch on the cut down array, joined into a string.
-                output.addAll(GlobSearch(String.join("/", globParts), path, suffix));
+                // Recursivly call GlobSearch on the cut down array, joined into a string.
+                foundFiles.addAll(GlobSearch(String.join("/", globParts), directoryToSearch, suffix));
             }
-
         } else {
-            //base case
-            //loop over every absoluteFilePath in the directory and test if it ends in the suffix
-            File dir = new File(path);
-            File[] fileList = dir.listFiles();
-            for (File f : fileList) {
-                if (f.isFile() && f.toString().endsWith(suffix)) {
-                    output.add(f.toString());
+            // Base case
+            // Loop over every absoluteFilePath in the directory and test if it ends in the suffix
+            for (final File item : directoryToSearch.listFiles()) {
+                if (item.isFile() && item.getPath().endsWith(suffix)) {
+                    foundFiles.add(item.getPath());
                 }
             }
         }
-        return output;
+
+        return foundFiles;
     }
 }
