@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.lavajuno.lucidjson.JsonObject;
-import org.lavajuno.lucidjson.JsonString;
 
 import mirrortorrent.io.Log;
 
@@ -30,9 +29,9 @@ public class TorrentSyncer implements Runnable {
     public void run() {
         Log log = Log.getInstance();
 
-        for (String projectName : mirrorsConfig.getKeys()) {
+        for (String projectName : mirrorsConfig.keys()) {
             JsonObject projectConfig = (JsonObject) mirrorsConfig.get(projectName);
-            JsonString projectTorrents = (JsonString) projectConfig.get("torrents");
+            String projectTorrents = projectConfig.get("torrents").toString();
 
             if (projectTorrents == null) {
                 continue;
@@ -40,11 +39,11 @@ public class TorrentSyncer implements Runnable {
 
             log.info("Syncing torrents for " + projectName);
 
-            //get the glob string for the mirrors.json project
-            String glob = projectTorrents.getValue();
+            // Get the glob string for the `mirrors.json` project
+            String glob = projectTorrents;
             System.out.println(glob);
 
-            //Find all torrent files from the given glob
+            // Find all torrent files from the given glob
             HashSet<String> torrentFiles = new HashSet<>();
             try {
                 torrentFiles.addAll(GlobSearch(glob, "", ".torrent"));
@@ -59,49 +58,59 @@ public class TorrentSyncer implements Runnable {
             }
 
             // Create project directories if they do not already exist
-            File torrentFolderName = new File(torrentFolder + "/" + projectName);
-            if (!torrentFolderName.exists()) {
-                torrentFolderName.mkdir();
-            }
-            File downloadFolderName = new File(downloadFolder + "/" + projectName);
-            if (!downloadFolderName.exists()) {
-                downloadFolderName.mkdir();
+            File projectTorrentFolder = torrentFolder
+                    .toPath()
+                    .resolve(projectName)
+                    .toFile();
+            if (!projectTorrentFolder.exists()) {
+                projectTorrentFolder.mkdir();
             }
 
-            //Create a hard link for each torrent file
-            for (String file : torrentFiles) {
-                List<String> fileList = Arrays.asList(file.split("/"));
+            File projectDownloadFolder = downloadFolder
+                    .toPath()
+                    .resolve(projectName)
+                    .toFile();
+            if (!projectDownloadFolder.exists()) {
+                projectDownloadFolder.mkdir();
+            }
 
-                String newFilePath = torrentFolder + "/" + projectName + "/" + fileList.getLast();
-                File newFile = new File(newFilePath);
-                try {
-                    if (!newFile.exists()) {
-                        Path oldPath = Paths.get(file);
-                        Path newPath = Paths.get(newFilePath);
-                        Files.createLink(newPath, oldPath);
+            // Create a hard link for each torrent absoluteFilePath
+            for (String absoluteFilePath : torrentFiles) {
+                List<String> absolutePathComponents = Arrays.asList(absoluteFilePath.split("/"));
+
+                File linkLocation = torrentFolder
+                        .toPath()
+                        .resolve(projectName)
+                        .resolve(absolutePathComponents.getLast())
+                        .toFile();
+
+                if (!linkLocation.exists()) {
+                    try {
+                        Path existingLocation = Paths.get(absoluteFilePath);
+                        Files.createLink(linkLocation.toPath(), existingLocation);
+                    } catch (IOException e) {
+                        log.warn(e.getMessage());
                     }
-                } catch (IOException e) {
-                    log.warn(e.getMessage());
                 }
 
-                //add non torrent file to downloads directory if it exists in the same glob
-                String newDownloadFile = removeSuffix(fileList.getLast(), ".torrent");
-                String newDownloadFilePath = downloadFolder + "/" + projectName + "/" + newDownloadFile;
-                HashSet<String> downloadFiles = new HashSet<>();
+                // add non torrent absoluteFilePath to downloads directory if it exists in the same glob
+                File newDownloadFile = downloadFolder
+                        .toPath()
+                        .resolve(projectName)
+                        .resolve(removeSuffix(absolutePathComponents.getLast(), ".torrent"))
+                        .toFile();
 
                 try {
-                    downloadFiles.addAll(GlobSearch(glob, "", newDownloadFile));
-                    for (String fd : downloadFiles) {
-                        File ndf = new File(newDownloadFilePath);
-                        if (!ndf.exists()) {
-                            Files.createLink(Paths.get(newDownloadFilePath), Paths.get(fd));
+                    for (String foundFile
+                            : GlobSearch(glob, "", newDownloadFile.getPath())) {
+                        if (!newDownloadFile.exists()) {
+                            Files.createLink(newDownloadFile.toPath(), Paths.get(foundFile));
                         }
                     }
                 } catch (IOException e) {
                     log.warn(e.getMessage());
                 }
             }
-
         }
     }
 
@@ -154,7 +163,7 @@ public class TorrentSyncer implements Runnable {
 
         } else {
             //base case
-            //loop over every file in the directory and test if it ends in the suffix
+            //loop over every absoluteFilePath in the directory and test if it ends in the suffix
             File dir = new File(path);
             File[] fileList = dir.listFiles();
             for (File f : fileList) {
