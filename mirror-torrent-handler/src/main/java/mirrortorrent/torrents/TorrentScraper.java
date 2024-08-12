@@ -52,7 +52,9 @@ public class TorrentScraper implements Runnable {
     }
 
     // use jsoup to get the list of anchorTags from a given webpage
-    public HashSet<String> scrapeLinksWithSuffix(String url, String filterSuffix) {
+    public HashSet<String> scrapeLinksWithSuffix(
+            final String url,
+            final String filterSuffix) {
         HashSet<String> linksContainingSuffix = new HashSet<>();
 
         Document doc;
@@ -82,8 +84,19 @@ public class TorrentScraper implements Runnable {
         return linksContainingSuffix;
     }
 
-    public HashSet<String> scrapeLibreOfficeTorrentLinks(String url, int depth) {
-        final List tokensToIgnore = Arrays.asList("apache", "mirrorbrain", "mailto", "?C=N;O=D", "?C=M;O=A", "?C=S;O=A", ".tar.gz", ".msi", ".asc", ".dmg");
+    public HashSet<String> scrapeLibreOfficeTorrentLinks(
+            final String url,
+            final int depth) {
+        final List tokensToIgnore = Arrays.asList("apache",
+                "mirrorbrain",
+                "mailto",
+                "?C=N;O=D",
+                "?C=M;O=A",
+                "?C=S;O=A",
+                ".tar.gz",
+                ".msi",
+                ".asc",
+                ".dmg");
 
         HashSet<String> mirrorLinks = new HashSet<>();
         HashSet<String> currentLinks = new HashSet<>();
@@ -124,7 +137,9 @@ public class TorrentScraper implements Runnable {
         return torrentLinks;
     }
 
-    public HashSet<String> filterWithIgnoreList(HashSet<String> inputset, List<String> toIgnore) {
+    public HashSet<String> filterWithIgnoreList(
+            final HashSet<String> inputset,
+            final List<String> toIgnore) {
         HashSet<String> outputset = new HashSet<>();
 
         for (final String link : inputset) {
@@ -148,13 +163,12 @@ public class TorrentScraper implements Runnable {
     /**
      * Download files from a vector of urls into a given file location
      */
-    public void downloadFileList(HashSet<String> urls, Path directory) {
+    public void downloadFileList(
+            final HashSet<String> urls,
+            final Path directory) {
         for (final String url : urls) {
-            // Get the filename from the url
-            List<String> split_url = Arrays.asList(url.split("/"));
-            String filename = split_url.getLast();
+            String filename = Arrays.asList(url.split("/")).getLast();
 
-            System.out.println(filename);
             try {
                 //download the file using the url, folder and calculated filename
                 downloadFile(url, directory.resolve(filename).toFile());
@@ -167,33 +181,42 @@ public class TorrentScraper implements Runnable {
     /**
      * Downloads a file from a given url into a given file path and name
      */
-    public void downloadFile(String url, File outfile) throws IOException {
+    public void downloadFile(
+            final String url,
+            final File outfile) throws IOException {
         //check to make sure that the file doesnt already exist
         if (outfile.exists()) {
             return;
         }
 
-        if (!outfile.toPath().getParent().toFile().exists()) {
-            outfile.toPath().getParent().toFile().mkdir();
+        if (!outfile.getParentFile().exists()) {
+            outfile.getParentFile().mkdir();
         }
 
         HttpURLConnection httpConn;
         try {
             httpConn = (HttpURLConnection) new URL(url).openConnection();
         } catch (IOException e) {
-            Log.getInstance().warn("Failed to establish HTTP connection while downloading file (" + outfile.getPath() + "). Exception message: " + e.getMessage());
+            Log.getInstance()
+                    .warn("Failed to establish HTTP connection while downloading file ("
+                            + outfile.getPath()
+                            + "). Exception message: "
+                            + e.getMessage());
             return;
         }
 
         // Check to make sure that connection is established successfully
         if (httpConn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            Log.getInstance().warn("Failed to download file: " + outfile.getPath() + ". Received HTTP status: " + httpConn.getResponseCode());
+            Log.getInstance()
+                    .warn("Failed to download file: "
+                            + outfile.getPath()
+                            + ". Received HTTP status: "
+                            + httpConn.getResponseCode());
             return;
         }
 
         try (BufferedInputStream inputStream = new BufferedInputStream(httpConn.getInputStream()); FileOutputStream outputStream = new FileOutputStream(outfile)) {
             int bytesRead;
-
             byte[] buffer = new byte[4096];
 
             while (inputStream.available() != 0) {
