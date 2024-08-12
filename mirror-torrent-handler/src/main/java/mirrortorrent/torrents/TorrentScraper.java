@@ -17,7 +17,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.lavajuno.lucidjson.JsonArray;
 import org.lavajuno.lucidjson.JsonObject;
-import org.lavajuno.lucidjson.JsonString;
 
 import mirrortorrent.io.Log;
 
@@ -37,26 +36,22 @@ public class TorrentScraper implements Runnable {
 
         for (int i = 0; i < torrentArray.size(); i++) {
             JsonObject torrentObject = (JsonObject) torrentArray.get(i);
-            String projectUrl = ((JsonString) torrentObject.get("url")).getValue();
-            String[] projectUrlArray = projectUrl.split("/")[2].split("\\.");
-            String projectName = projectUrlArray[projectUrlArray.length - 2];
-
-            System.out.println(projectUrl);
-            System.out.println(projectName);
+            String projectUrl = torrentObject.get("url").toString();
+            String projectName = torrentObject.get("name").toString();
 
             if (!projectName.equals("documentfoundation")) {
-                log.info("scraping torrents for " + projectName);
+                log.info("Scraping torrents for " + projectName);
                 HashSet<String> links = scrapeLinksWithSuffix(projectUrl, ".torrent");
                 downloadFileList(links, torrentDirectory.toPath().resolve(projectName));
             } else {
-                log.info("scraping torrents for libreoffice");
+                log.info("Scraping torrents for LibreOffice");
                 HashSet<String> links = scrapeLibreOfficeTorrentLinks(projectUrl, 5);
                 downloadFileList(links, torrentDirectory.toPath().resolve("libreoffice"));
             }
         }
     }
 
-    //use jsoup to get the list of anchorTags from a given webpage
+    // use jsoup to get the list of anchorTags from a given webpage
     public HashSet<String> scrapeLinksWithSuffix(String url, String filterSuffix) {
         HashSet<String> linksContainingSuffix = new HashSet<>();
 
