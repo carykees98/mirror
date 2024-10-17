@@ -16,19 +16,16 @@ services:
     networks:
       - mirror
 
-  # --- API ---
-  api:
-    build: ./mirror-api
-    container_name: mirror-api
-    restart: unless-stopped
+  # --- Website ---
+  website:
+    build: ./mirror_website
+    container_name: mirror_website
     ports:
       - "30301:8080"
     networks:
       - mirror
     volumes:
       - "./configs:/mirror/configs:ro"
-    depends_on:
-      - log-server
 
   # --- Map ---
   map:
@@ -63,17 +60,17 @@ services:
     tty: true
 
   # --- Torrent handler ---
-  torrent-handler:
-    build: ./mirror-torrent-handler
-    container_name: mirror-torrent-handler
-    restart: unless-stopped
-    volumes:
-      - "/storage:/storage"
-      - "./configs:/mirror/configs:ro"
-    networks:
-      - mirror
-    depends_on:
-      - log-server
+  # torrent-handler:
+  #   build: ./mirror-torrent-handler
+  #   container_name: mirror-torrent-handler
+  #   restart: unless-stopped
+  #   volumes:
+  #     - "/storage:/storage"
+  #     - "./configs:/mirror/configs:ro"
+  #   networks:
+  #     - mirror
+  #   depends_on:
+  #     - log-server
 
   # --- Metrics engine ---
   metrics:
