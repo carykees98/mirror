@@ -1,0 +1,9 @@
+[submodule "scripts/quick-fedora-mirror"]
+	path = scripts/quick-fedora-mirror
+	url = https://pagure.io/quick-fedora-mirror.git
+[submodule "scripts/archvsync"]
+	path = scripts/archvsync
+	url = https://github.com/COSI-Lab/archvsync.git
+[submodule "scripts/raspbian-tools"]
+	path = scripts/raspbian-tools
+	url = https://github.com/plugwash/raspbian-tools.git
