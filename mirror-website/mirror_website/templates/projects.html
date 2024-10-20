@@ -7,135 +7,155 @@
 
 <div class="navbar_spacer"></div>
 
-<h3 class="mirror_header">
-    Jump to:
-    <a onclick="document.getElementById('DISTRIBUTIONS_HEADER').scrollIntoView()">
-        Distributions,
-    </a>
-    <a onclick="document.getElementById('SOFTWARE_HEADER').scrollIntoView()">
-        Software,
-    </a>
-    <a onclick="document.getElementById('MISC_HEADER').scrollIntoView()">
-        Miscellaneous
-    </a>
-</h3>
+<main>
+    <header>
+        Jump to:
+        <a onclick="document.getElementById('distributions').scrollIntoView()">
+            Distributions,
+        </a>
+        <a onclick="document.getElementById('software').scrollIntoView()">
+            Software,
+        </a>
+        <a onclick="document.getElementById('misc').scrollIntoView()">
+            Miscellaneous
+        </a>
+    </header>
 
-<h1 class="mirror_header" id="DISTRIBUTIONS_HEADER">
-    Distributions
-</h1>
+    <section id="distributions">
+        <header>
+            <h1>Distributions</h1>
+        </header>
 
-{% for name, mirror in distributions.items %}
-    <div class="mirror_container">
-        <div class="mirror_text">
-            <h3>
-                {{ mirror.name }} {% if mirror.official %}(Official){% endif %}
-            </h3>
-            <p>
-                HTTP: 
-                <a href="/{{ name }}">
-                    http://mirror.clarkson.edu/{{ name }}
-                </a>
-            </p>
-            <p>
-                HTTPS: 
-                <a href="https://mirror.clarkson.edu/{{ name }}">
-                    https://mirror.clarkson.edu/{{ name }}
-                </a>
-            </p>
-            <p>
-                Homepage: 
-                <a href="{{ mirror.homepage }}">
-                    {{ mirror.homepage }}
-                </a>
-            </p>
+        <div class="card_container">
+            {% for name, mirror in distributions.items %}
+                <article class="card {% if not mirror.icon %}noimg{% endif %}">
+
+                    {% if mirror.icon %}
+                        <img class="mirror_icon" src="{% static mirror.icon %}">
+                    {% endif %}
+
+                    <header>
+                        <h2>
+                            {{ mirror.name }} {% if mirror.official %}(Official){% endif %}
+                        </h2>
+                    </header>
+
+
+                    <div class="content">
+                        <p>
+                            HTTP: 
+                            <a href="/{{ name }}">
+                                http://mirror.clarkson.edu/{{ name }}
+                            </a>
+                        </p>
+                        <p>
+                            HTTPS: 
+                            <a href="https://mirror.clarkson.edu/{{ name }}">
+                                https://mirror.clarkson.edu/{{ name }}
+                            </a>
+                        </p>
+                        <p>
+                            Homepage: 
+                            <a href="{{ mirror.homepage }}">
+                                {{ mirror.homepage }}
+                            </a>
+                        </p>
+                    </div>
+                </article>
+            {% endfor %}
         </div>
-        {% if mirror.icon %}
-            <img class="mirror_icon" src="{% static mirror.icon %}">
-        {% endif %}
-    </div>
-{% endfor %}
+    </section>
 
-<h1 class="mirror_header" id="SOFTWARE_HEADER">
-    Software
-</h1>
+    <section id="software">
+        <header>
+            <h1>Software</h1>
+        </header>
 
-{% for name, mirror in software.items %}
-    <div class="mirror_container">
-        <div class="mirror_text">
-            <h3>
-                {{ mirror.name }} {% if mirror.official %}(Official){% endif %}
-            </h3>
-            <p>
-                HTTP: 
-                <a href="/{{ name }}">
-                    http://mirror.clarkson.edu/{{ name }}
-                </a>
-            </p>
-            <p>
-                HTTPS: 
-                <a href="https://mirror.clarkson.edu/{{ name }}">
-                    https://mirror.clarkson.edu/{{ name }}
-                </a>
-            </p>
-            <p>
-                Homepage: 
-                <a href="{{ mirror.homepage }}">
-                    {{ mirror.homepage }}
-                </a>
-            </p>
+        <div class="card_container">
+            {% for name, mirror in software.items %}
+                <article class="card {% if not mirror.icon %}noimg{% endif %}">
+
+                    {% if mirror.icon %}
+                        <img class="mirror_icon" src="{% static mirror.icon %}">
+                    {% endif %}
+
+                    <header>
+                        <h2>
+                            {{ mirror.name }} {% if mirror.official %}(Official){% endif %}
+                        </h2>
+                    </header>
+
+
+                    <div class="content">
+                        <p>
+                            HTTP: 
+                            <a href="/{{ name }}">
+                                http://mirror.clarkson.edu/{{ name }}
+                            </a>
+                        </p>
+                        <p>
+                            HTTPS: 
+                            <a href="https://mirror.clarkson.edu/{{ name }}">
+                                https://mirror.clarkson.edu/{{ name }}
+                            </a>
+                        </p>
+                        <p>
+                            Homepage: 
+                            <a href="{{ mirror.homepage }}">
+                                {{ mirror.homepage }}
+                            </a>
+                        </p>
+                    </div>
+                </article>
+            {% endfor %}
         </div>
-        {% if mirror.icon %}
-            <img class="mirror_icon" src="{% static mirror.icon %}">
-        {% endif %}
-    </div>
-{% endfor %}
+    </section>
 
-<h1 class="mirror_header" id="MISC_HEADER">
-    Miscellaneous
-</h1>
+    <section id="misc">
+        <header>
+            <h1>Miscellaneous</h1>
+        </header>
 
-{% for name, mirror in miscellaneous.items %}
-    <div class="mirror_container">
-        <div class="mirror_text">
-            <h3>
-                {{ mirror.name }} {% if mirror.official %}(Official){% endif %}
-            </h3>
-            <p>
-                HTTP: 
-                <a href="/{{ name }}">
-                    http://mirror.clarkson.edu/{{ name }}
-                </a>
-            </p>
-            <p>
-                HTTPS: 
-                <a href="https://mirror.clarkson.edu/{{ name }}">
-                    https://mirror.clarkson.edu/{{ name }}
-                </a>
-            </p>
-            <p>
-                Homepage: 
-                <a href="{{ mirror.homepage }}">
-                    {{ mirror.homepage }}
-                </a>
-            </p>
+        <div class="card_container">
+            {% for name, mirror in miscellaneous.items %}
+                <article class="card {% if not mirror.icon %}noimg{% endif %}">
+
+                    {% if mirror.icon %}
+                        <img class="mirror_icon" src="{% static mirror.icon %}">
+                    {% endif %}
+
+                    <header>
+                        <h2>
+                            {{ mirror.name }} {% if mirror.official %}(Official){% endif %}
+                        </h2>
+                    </header>
+
+
+                    <div class="content">
+                        <p>
+                            HTTP: 
+                            <a href="/{{ name }}">
+                                http://mirror.clarkson.edu/{{ name }}
+                            </a>
+                        </p>
+                        <p>
+                            HTTPS: 
+                            <a href="https://mirror.clarkson.edu/{{ name }}">
+                                https://mirror.clarkson.edu/{{ name }}
+                            </a>
+                        </p>
+                        <p>
+                            Homepage: 
+                            <a href="{{ mirror.homepage }}">
+                                {{ mirror.homepage }}
+                            </a>
+                        </p>
+                    </div>
+                </article>
+            {% endfor %}
         </div>
-        {% if mirror.icon %}
-            <img class="mirror_icon" src="{% static mirror.icon %}">
-        {% endif %}
-    </div>
-{% endfor %}
-
-<div class="footer_container">
-    <p class="footer_content">
-        Hosted by the
-        <a class="footer_link" href="https://cosi.clarkson.edu">Clarkson Open Source Institute.</a>
-        <a class="footer_link" href="contact.html">Contact Us</a>
-        <br>
-        <br>
-        Mirror is Free and Open Source.
-        <a class="footer_link" href="#">View on Github</a>
-    </p>
-</div>
+    </section>
+</main>
 
 <script>
     document.getElementById("navbar_projects").classList.add("active");

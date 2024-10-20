@@ -7,64 +7,77 @@
 
 <div class="navbar_spacer"></div>
 
-<div class="banner_container">
-    <div class="banner_content">
-        <h1>Welcome to Mirror</h1>
+<header class="banner">
+    <h1>Welcome to Mirror</h1>
+</header>
+
+<main>
+    <div class="content">
+        This site is a public repository of Free and Open Source Software hosted
+        by the
+        <a href="https://cosi.clarkson.edu">Clarkson Open Source Institute</a>
+        at
+        <a href="https://clarkson.edu">Clarkson University</a>
+        in Potsdam, NY, US. This service strives to provide exposure to and 
+        ensure availability of open source software and operating systems to the
+        general public. We mirror many Linux distributions, several third party
+        software repositories, and miscellaneous data dumps. 
     </div>
-</div>
+    
+    <div class="content">
+        <h1><i class="fa-solid fa-laptop icon"></i> Distributions</h1>
+        <p>
+            We host over 20
+            <a href="{% url 'projects' %}">distributions,</a>
+            including Debian, Ubuntu, Arch Linux, Linux Mint, and many more. 
+            Many are official mirrors, and the majority are updated 4 times per
+            day.
+        </p>
+    </div>
+    
+    <div class="content">
+        <h1><i class="fa-solid fa-compact-disc icon"></i> Software</h1>
+        <p>
+            We host a variety of third party
+            <a href="{% url 'projects' %}">software</a>
+            including Blender, KiCad, Cygwin, Eclipse, among many others.
+        </p>
+    </div>
+    
+    <div class="content">
+        <h1><i class="fa-solid fa-hard-drive icon"></i> Miscellaneous</h1>
+        <p>
+            We also host
+            <a href="{% url 'projects' %}">miscellaneous projects,</a>
+            including Wikipedia dumps and torrents.
+        </p>
+    </div>
 
-<div class="content_container">
-    This site is a public repository of Free and Open Source Software hosted
-    by the
-    <a href="https://cosi.clarkson.edu">Clarkson Open Source Institute</a>
-    at
-    <a href="https://clarkson.edu">Clarkson University</a>
-    in Potsdam, NY, US. This service strives to provide exposure to and 
-    ensure availability of open source software and operating systems to the
-    general public. We mirror many Linux distributions, several third party
-    software repositories, and miscellaneous data dumps. 
-</div>
+    <hr>
 
-<div class="content_container">
-    <h1><i class="fa-solid fa-laptop icon"></i> Distributions</h1>
-    <p>
-        We host over 20
-        <a href="projects.html">distributions,</a>
-        including Debian, Ubuntu, Arch Linux, Linux Mint, and many more. 
-        Many are official mirrors, and the majority are updated 4 times per
-        day.
-    </p>
-</div>
-
-<div class="content_container">
-    <h1><i class="fa-solid fa-compact-disc icon"></i> Software</h1>
-    <p>
-        We host a variety of third party
-        <a href="projects.html">software</a>
-        including Blender, KiCad, Cygwin, Eclipse, among many others.
-    </p>
-</div>
-
-<div class="content_container">
-    <h1><i class="fa-solid fa-hard-drive icon"></i> Miscellaneous</h1>
-    <p>
-        We also host
-        <a href="projects.html">miscellaneous projects,</a>
-        including Wikipedia dumps and torrents.
-    </p>
-</div>
-
-<div class="footer_container">
-    <p class="footer_content">
-        Hosted by the
-        <a class="footer_link" href="https://cosi.clarkson.edu">Clarkson Open Source Institute.</a>
-        <a class="footer_link" href="contact.html">Contact Us</a>
-        <br>
-        <br>
-        Mirror is Free and Open Source.
-        <a class="footer_link" href="#">View on Github</a>
-    </p>
-</div>
+    <div class="content">
+        <h1>Contact Us</h1>
+        <p>
+            To get in touch with the Mirror team, send a message to mirroradmin
+            [AT] clarkson [DOT] edu We check this inbox periodically, however if
+            a matter is time-sensitive we ask that you also
+            <a href="https://cosi.clarkson.edu/contact.html">contact COSI directly.</a>
+        </p>
+    </div>
+    
+    <div class="content">
+        <h1>Request a Mirror</h1>
+        <p>
+            We are always looking for new projects to mirror! If there's 
+            something you'd like us to mirror, please open an issue with the 
+            "Mirror Request" tag on our
+            <a href="#">Github repository.</a>
+            The issue template includes instructions on what information we need
+            to start syncing the mirror. If possible, rsync is preferred, but we
+            can also sync over HTTP.
+        </p>
+    </div>
+</main>
 
 <script>
     document.getElementById("navbar_home").classList.add("active");
