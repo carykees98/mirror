@@ -25,7 +25,7 @@ services:
     networks:
       - mirror
     volumes:
-      - "./configs:/mirror/configs:ro"
+      - "./configs:/home/mirror/configs:ro"
 
   # --- Website static file server / proxy ---
   website_proxy:
