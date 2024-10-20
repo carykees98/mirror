@@ -49,7 +49,7 @@ services:
       - "30302:8080"
     volumes:
       - "./configs:/mirror/configs:ro"
-      - "./GeoLite2City:/mirror/GeoLite2City"
+      - "geolite2:/mirror/GeoLite2City"
     networks:
       - mirror
     depends_on:
@@ -95,7 +95,7 @@ services:
       - 8081
     volumes:
       - "/var/log/nginx:/mirror/nginx:ro"
-      - "./data:/mirror/data"
+      - "metrics:/mirror/data"
     networks:
       - mirror
     depends_on:
@@ -110,7 +110,7 @@ services:
       - 9090
     volumes:
       - "./configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
-      - "prometheus_data:/prometheus"
+      - "prometheus:/prometheus"
     networks:
       - mirror
     depends_on:
@@ -124,20 +124,20 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
     volumes:
-      - "grafana-storage:/var/lib/grafana"
+      - "grafana:/var/lib/grafana"
     networks:
       - mirror
     depends_on:
       - prometheus
 
-# Lifetime of "mirror" network is not managed by this compose file
+
 networks:
   mirror:
     external: true
 
-# Lifetime of Prometheus/Grafana volumes is not managed by this compose file
+
 volumes:
-  prometheus_data:
-    external: true
-  grafana-storage:
-    external: true
+  prometheus: {}
+  grafana: {}
+  metrics: {}
+  geolite2: {}

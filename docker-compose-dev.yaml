@@ -92,7 +92,7 @@ services:
       - 8081
     volumes:
       - "./mirror-metrics/nginx:/mirror/nginx:ro"
-      - "./mirror-metrics/data:/mirror/data"
+      - "metrics:/mirror/data"
     networks:
       - mirror
     depends_on:
@@ -112,7 +112,9 @@ services:
     depends_on:
       - metrics
 
-# Lifetime of "mirror" network is not managed by this compose file
 networks:
   mirror:
     external: true
+
+volumes:
+  metrics: {}
