@@ -17,21 +17,21 @@ services:
 
   # --- Website ---
   website:
-    build: ./mirror_website
-    container_name: mirror_website
+    build: ./mirror-website
+    container_name: mirror-website
     expose:
       - 8000
     networks:
       - mirror
     volumes:
-      - "./mirror_website/configs:/home/mirror/configs:ro"
+      - "./mirror-website/configs:/home/mirror/configs:ro"
 
   # --- Website static file server / proxy ---
   website_proxy:
     build:
-      context: ./mirror_website
+      context: ./mirror-website
       dockerfile: proxy.Dockerfile
-    container_name: mirror_website_proxy
+    container_name: mirror-website-proxy
     ports:
       - "127.0.0.1:30301:80"
     networks:
