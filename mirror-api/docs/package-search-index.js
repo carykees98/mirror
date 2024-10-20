@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"edu.clarkson.cosi.mirrorapi"},{"l":"edu.clarkson.cosi.mirrorapi.error"},{"l":"edu.clarkson.cosi.mirrorapi.io"}];updateSearchResults();
