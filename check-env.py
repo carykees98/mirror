@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/python3
 
 """
     check_mirror_env.py
@@ -35,7 +35,7 @@ def checkDocker() -> bool:
 def checkDockerCompose() -> bool:
     print("Checking presence of docker-compose v2.......", end="")
     return matches(
-            r"^Docker Compose version \d+\.\d+\.\d+.*",
+            r"^Docker Compose version .*\d+\.\d+\.\d+.*",
             runCommandWithOutput(["docker", "compose", "version"])
     )
 
