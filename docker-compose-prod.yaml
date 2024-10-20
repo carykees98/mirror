@@ -20,12 +20,25 @@ services:
   website:
     build: ./mirror_website
     container_name: mirror_website
-    ports:
-      - "30301:8000"
+    expose:
+      - 8000
     networks:
       - mirror
     volumes:
       - "./configs:/mirror/configs:ro"
+
+  # --- Website static file server / proxy ---
+  website_proxy:
+    build:
+      context: ./mirror_website
+      dockerfile: proxy.Dockerfile
+    container_name: mirror_website_proxy
+    ports:
+      - "127.0.0.1:30301:80"
+    networks:
+      - mirror
+    depends_on:
+      - website
 
   # --- Map ---
   map:
@@ -109,7 +122,7 @@ services:
     container_name: mirror-grafana
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - "grafana-storage:/var/lib/grafana"
     networks:
