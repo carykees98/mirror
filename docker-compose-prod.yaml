@@ -20,6 +20,7 @@ services:
   website:
     build: ./mirror-website
     container_name: mirror-website
+    restart: unless-stopped
     expose:
       - 8000
     networks:
@@ -33,6 +34,7 @@ services:
       context: ./mirror-website
       dockerfile: proxy.Dockerfile
     container_name: mirror-website-proxy
+    restart: unless-stopped
     ports:
       - "127.0.0.1:30301:80"
     networks:
