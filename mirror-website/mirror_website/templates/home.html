@@ -23,36 +23,50 @@
         general public. We mirror many Linux distributions, several third party
         software repositories, and miscellaneous data dumps. 
     </div>
-    
-    <div class="content">
-        <h1><i class="fa-solid fa-laptop icon"></i> Distributions</h1>
-        <p>
-            We host over 20
-            <a href="{% url 'projects' %}">distributions,</a>
-            including Debian, Ubuntu, Arch Linux, Linux Mint, and many more. 
-            Many are official mirrors, and the majority are updated 4 times per
-            day.
-        </p>
-    </div>
-    
-    <div class="content">
-        <h1><i class="fa-solid fa-compact-disc icon"></i> Software</h1>
-        <p>
-            We host a variety of third party
-            <a href="{% url 'projects' %}">software</a>
-            including Blender, KiCad, Cygwin, Eclipse, among many others.
-        </p>
-    </div>
-    
-    <div class="content">
-        <h1><i class="fa-solid fa-hard-drive icon"></i> Miscellaneous</h1>
-        <p>
-            We also host
-            <a href="{% url 'projects' %}">miscellaneous projects,</a>
-            including Wikipedia dumps and torrents.
-        </p>
-    </div>
 
+    <div class="card_container">
+        <article class="card noimg">
+            <header>
+                <h1>
+                    <i class="fa-solid fa-laptop icon"></i> Distributions
+                </h1>
+            </header>
+            <div class="content">
+                We host over 20
+                <a href="{% url 'projects' %}#distributions">distributions,</a>
+                including Debian, Ubuntu, Arch Linux, Linux Mint, and many more. 
+                Many are official mirrors, and the majority are updated 4 times per
+                day.
+            </div>
+        </article>
+
+        <article class="card noimg">
+            <header>
+                <h1>
+                    <i class="fa-solid fa-compact-disc icon"></i> Software
+                </h1>
+            </header>
+            <div class="content">
+                We host a variety of third party
+                <a href="{% url 'projects' %}#software">software</a>
+                including Blender, KiCad, Cygwin, Eclipse, among many others.
+            </div>
+        </article>
+
+        <article class="card noimg">
+            <header>
+                <h1>
+                    <i class="fa-solid fa-hard-drive icon"></i> Miscellaneous
+                </h1>
+            </header>
+            <div class="content">
+                We also host
+                <a href="{% url 'projects' %}">miscellaneous projects,</a>
+                including Wikipedia dumps and torrents.
+            </div>
+        </article>
+    </div>
+    
     <hr>
 
     <div class="content">
@@ -71,7 +85,7 @@
             We are always looking for new projects to mirror! If there's 
             something you'd like us to mirror, please open an issue with the 
             "Mirror Request" tag on our
-            <a href="#">Github repository.</a>
+            <a href="https://github.com/COSI-Lab/mirror/">GitHub repository.</a>
             The issue template includes instructions on what information we need
             to start syncing the mirror. If possible, rsync is preferred, but we
             can also sync over HTTP.
