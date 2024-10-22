@@ -109,9 +109,7 @@ int main() {
         std::string project = event.getProject();
         if(project.size() > 0) {
             //logger->debug("Hit on project " + project + ".");
-            state.registerHit(project);
             hit_counter.Add({{"project", project}}).Increment();
-            state.registerBytesSent(project, event.getBytesSent());
             byte_counter.Add({{"project", project}}).Increment((double) event.getBytesSent());
             state.registerLastEvent(line);
             zmq::message_t message{event.toMapString()};
@@ -122,7 +120,6 @@ int main() {
         std::chrono::duration<double> since_updated = 
                 std::chrono::system_clock::now() - last_updated;
         if(since_updated.count() >= STATE_UPDATE_INTERVAL) {
-            std::cout << since_updated.count() << std::endl;
             state.save();
             last_updated = std::chrono::system_clock::now();
         }

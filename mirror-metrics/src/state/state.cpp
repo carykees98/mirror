@@ -32,16 +32,12 @@ namespace mirror {
         json state = json::parse(f);
         state.items();
         f.close();
-        this->hits = state["hits"].template get<std::map<std::string, u_long>>();
-        this->bytes_sent = state["bytes_sent"].template get<std::map<std::string, u_long>>();
         this->last_event = state["last_event"].template get<std::string>();
     }
 
     void State::save() {
-        logger->debug("Saving application state...");
+        // logger->debug("Saving application state...");
         json j;
-        j["hits"] = hits;
-        j["bytes_sent"] = bytes_sent;
         j["last_event"] = last_event;
         std::ofstream f;
         std::rename(FILE_PATH, BACKUP_FILE_PATH);
@@ -52,19 +48,8 @@ namespace mirror {
             f << j;
             f.close();
         }
-        std::stringstream s;
-        s << "Saved state: \"" << j << "\"";
-        logger->debug(s.str());   
+        // std::stringstream s;
+        // s << "Saved state: \"" << j << "\"";
+        // logger->debug(s.str());   
     }
-
-    void State::registerHit(const std::string &project) {
-        hits.insert({project, 0});
-        hits[project] += 1;
-    }
-
-    void State::registerBytesSent(const std::string &project, uint64_t req_bytes_sent) {
-        bytes_sent.insert({project, 0});
-        bytes_sent[project] += req_bytes_sent;
-    }
-    
 }
