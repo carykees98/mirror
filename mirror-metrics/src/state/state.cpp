@@ -24,8 +24,6 @@ namespace mirror {
         f.open(FILE_PATH);
         if(f.fail()) {
             logger->warn("Failed to load application state from disk.");
-            this->hits = std::map<std::string, u_long>();
-            this->bytes_sent = std::map<std::string, u_long>();
             this->last_event = "";
             return;
         }
