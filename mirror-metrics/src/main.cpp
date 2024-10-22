@@ -60,17 +60,6 @@ int main() {
             .Help("Bytes sent per project")
             .Register(*registry);
 
-    logger->info("Restoring state...");
-
-    // Restore counters' state
-    for(auto const &i : state.getHits()) {
-        hit_counter.Add({{"project", i.first}}).Increment(i.second);
-    }
-
-    for(auto const &i : state.getBytesSent()) {
-        byte_counter.Add({{"project", i.first}}).Increment(i.second);
-    }
-
     // Allow scraping of registry by Prometheus
     exposer.RegisterCollectable(registry);
 
