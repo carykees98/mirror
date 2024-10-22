@@ -98,7 +98,15 @@ namespace mirror {
             s << path.at(i);
         }
         std::string proj = s.str();
-        if(proj == "css" | proj == "js" | proj == "img" | proj == "api") {
+        if(
+            proj == "static"
+            || proj == "home"
+            || proj == "projects"
+            || proj == "about"
+            || proj == "map"
+            || proj == "status"
+            || proj == "ws"
+        ) {
             return ""; // Ignore internal paths
         }
         return proj;
