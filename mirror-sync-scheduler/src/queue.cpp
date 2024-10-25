@@ -170,7 +170,7 @@ void Queue::syncProject(std::string name){
     //most projects have only one command but some have 2 or even 3
     for(std::string command : syncCommands[name]){
         //have the commands output to /dev/null so that we dont fill log files
-        command = command + " > /dev/null";
+        //command = command + " > /dev/null";
         if(dryrun == true){
             command = "echo \"" + command + "\"";  
             //run command
