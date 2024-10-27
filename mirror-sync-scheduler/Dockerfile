@@ -3,7 +3,7 @@
 
 # Build
 FROM ubuntu:24.04 as builder
-RUN apt update && apt install -y g++ cmake libzmq3-dev ninja-build git python3
+RUN apt update && apt install -y g++ cmake libzmq3-dev ninja-build git
 WORKDIR /mirror
 COPY ./src /mirror/src
 COPY ./lib /mirror/lib
@@ -14,7 +14,7 @@ RUN cmake --build /mirror/build --target all
 
 # Run
 FROM ubuntu:24.04
-RUN apt update && apt upgrade -y
+RUN apt update && apt install -y python3
 RUN apt install -y libzmq3-dev rsync
 WORKDIR /mirror
 COPY --from=builder /mirror/build/syncScheduler .
