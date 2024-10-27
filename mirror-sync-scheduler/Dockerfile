@@ -3,7 +3,7 @@
 
 # Build
 FROM ubuntu:24.04 as builder
-RUN apt update && apt upgrade -y && apt install -y g++ cmake libzmq3-dev ninja-build git
+RUN apt update && apt install -y g++ cmake libzmq3-dev ninja-build git python3
 WORKDIR /mirror
 COPY ./src /mirror/src
 COPY ./lib /mirror/lib
