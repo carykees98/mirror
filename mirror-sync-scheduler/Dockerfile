@@ -14,7 +14,7 @@ RUN cmake --build /mirror/build --target all
 
 # Run
 FROM ubuntu:24.04
-RUN apt update && apt install -y python3
+RUN apt update && apt install -y python3 curl wget
 RUN apt install -y libzmq3-dev rsync
 WORKDIR /mirror
 COPY --from=builder /mirror/build/syncScheduler .
