@@ -1,0 +1,16 @@
+checks:
+  - bugprone-*,
+  - clang-analyzer-*,
+  - concurrency-*,
+  - cppcoreguidelines-*,
+  - hicpp-*,
+  - llvm-*,
+  - -llvmlibc-*,
+  - misc-*,
+  - modernize-*,
+  - performance-*,
+  - portability-*,
+  - readability-*
+WarningsAsErrors: "*"
+FormatStyle: file
+HeaderFilterRegex: "./include/*"
