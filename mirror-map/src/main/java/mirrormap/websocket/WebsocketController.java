@@ -38,11 +38,11 @@ public class WebsocketController {
      */
     public synchronized void broadcast(WebsocketFrame f) {
         for(int i = 0; i < connections.size(); i++) {
-            if(connections.get(i).isAlive()) {
-                connections.get(i).sendFrame(f);
-            } else {
+            if(connections.get(i).getState() == Thread.State.TERMINATED) {
                 connections.remove(i);
                 i--;
+            } else {
+                connections.get(i).sendFrame(f);
             }
         }
     }
