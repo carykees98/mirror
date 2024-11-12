@@ -67,8 +67,6 @@ public class WebsocketServerThread extends Thread {
                 }
             }
 
-            WebsocketController.getInstance().deregister(this);
-
             log.info("Closing websocket connection...");
 
             socket.close();
@@ -76,13 +74,10 @@ public class WebsocketServerThread extends Thread {
             log.info("Closed websocket connection.");
 
         } catch(ParseException e) {
-            WebsocketController.getInstance().deregister(this);
             log.error("ParseException on HTTP request from " + socket.getInetAddress().toString());
         } catch(NoSuchAlgorithmException e) {
-            WebsocketController.getInstance().deregister(this);
             log.error("WebsocketServerThread threw a NoSuchAlgorithmException. This should not happen!");
         } catch(IOException e) {
-            WebsocketController.getInstance().deregister(this);
             log.error("IOException communicating with" + socket.getInetAddress().toString());
         }
     }
@@ -90,7 +85,6 @@ public class WebsocketServerThread extends Thread {
     @Override
     public void interrupt() {
         log.info("Closing session...");
-        WebsocketController.getInstance().deregister(this);
         try {
             socket.close();
         } catch(IOException e) {
