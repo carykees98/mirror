@@ -33,25 +33,23 @@ public class WebsocketController {
 
     /**
      * Broadcasts a WebsocketFrame to every currently connected client.
+     * If a client has disconnected, it will be removed from the list of active connections.
      * @param f WebsocketFrame to broadcast
      */
     public synchronized void broadcast(WebsocketFrame f) {
-        for(WebsocketServerThread i : connections) {
-            i.sendFrame(f);
+        for(int i = 0; i < connections.size(); i++) {
+            if(connections.get(i).getState() == Thread.State.TERMINATED) {
+                connections.remove(i);
+                i--;
+            } else {
+                connections.get(i).sendFrame(f);
+            }
         }
     }
 
     /**
      * Registers a WebsocketServerThread with this WebsocketController.
-     * It is the responsibility of each WebsocketServerThread to deregister itself
-     * if an error occurs or the client closes the connection.
      * @param session WebsocketServerThread instance to register (usually "this")
      */
     public void register(WebsocketServerThread session) { connections.add(session); }
-
-    /**
-     * Deregisters a WebsocketServerThread from this WebsocketController.
-     * @param session WebsocketServerThread instance to deregister (usually "this")
-     */
-    public void deregister(WebsocketServerThread session) { connections.remove(session); }
 }
