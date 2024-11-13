@@ -1,7 +1,9 @@
 package mirrormap.websocket;
 
 import mirrormap.io.WebsocketFrame;
+import mirrormap.log.Log;
 
+import java.io.IOException;
 import java.util.Vector;
 
 /**
@@ -14,12 +16,14 @@ import java.util.Vector;
 public class WebsocketController {
     private final Vector<WebsocketServerThread> connections;
     private static WebsocketController instance = null;
+    private final Log log;
 
     /**
      * Private constructor for WebsocketController.
      */
     private WebsocketController() {
         connections = new Vector<>();
+        log = Log.getInstance();
     }
 
     /**
@@ -38,11 +42,15 @@ public class WebsocketController {
      */
     public synchronized void broadcast(WebsocketFrame f) {
         for(int i = 0; i < connections.size(); i++) {
-            if(connections.get(i).getState() == Thread.State.TERMINATED) {
+            if(!connections.get(i).active) {
                 connections.remove(i);
                 i--;
             } else {
-                connections.get(i).sendFrame(f);
+                try {
+                    connections.get(i).sendFrame(f);
+                } catch(IOException ignored) {
+                    log.warn("Failed to broadcast frame.");
+                }
             }
         }
     }
