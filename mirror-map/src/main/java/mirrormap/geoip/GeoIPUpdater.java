@@ -50,6 +50,8 @@ public class GeoIPUpdater implements Runnable {
     public void run(){
         //get a pointer to the maxmind handler object
         GeoIPDatabase maxmind = GeoIPDatabase.getInstance();
+        // Configure database for the first time
+        maxmind.configure();
         while(true){
             try{
                 //TODO: Change to sleep till 1am (or midnight)
