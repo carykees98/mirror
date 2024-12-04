@@ -41,7 +41,7 @@ public class GeoIPDatabase {
         }
         catch(IOException e){
             log.error("Failed to configure GeoIP database.");
-            e.printStackTrace();
+            log.debug(e.toString());
         }
         log.info("Done configuring GeoIP database.");
     }

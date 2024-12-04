@@ -51,13 +51,6 @@ public class GeoIPUpdater implements Runnable {
         //get a pointer to the maxmind handler object
         GeoIPDatabase maxmind = GeoIPDatabase.getInstance();
         while(true){
-            log.info("Updating GeoIP database...");
-            //download the database
-            downloadDatabase();
-            //configure the database handler for the database file
-            maxmind.configure();
-            log.info("Done updating GeoIP database.");
-
             try{
                 //TODO: Change to sleep till 1am (or midnight)
                 //sleep for 1 day
@@ -66,6 +59,14 @@ public class GeoIPUpdater implements Runnable {
             catch(InterruptedException e){
                 break;
             }
+            log.info("Updating GeoIP database...");
+            //download the database
+            downloadDatabase();
+            //configure the database handler for the database file
+            maxmind.configure();
+            log.info("Done updating GeoIP database.");
+
+
         }
     }
 
@@ -120,7 +121,7 @@ public class GeoIPUpdater implements Runnable {
         }
         catch(IOException | GeneralSecurityException e){
             log.error("Failed to update GeoIP database.");
-            e.printStackTrace();
+            log.debug(e.toString());
         }
     }
 
